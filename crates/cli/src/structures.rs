@@ -35,6 +35,12 @@ pub(super) enum Command {
         #[arg(long, requires = "directory", short)]
         recurse: bool
     },
+    List {
+        path: Option<PathBuf>,
+        
+        #[arg(long, short)]
+        recurse: bool
+    },
     Rename {
         new: PathBuf,
         old: PathBuf

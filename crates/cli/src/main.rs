@@ -5,7 +5,7 @@ use std::io::Result;
 
 use clap::Parser;
 
-use crate::{functions::{clear, create, delete, rename}, structures::{Cli, Command}};
+use crate::{functions::{clear, create, delete, list, rename}, structures::{Cli, Command}};
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
@@ -14,6 +14,7 @@ fn main() -> Result<()> {
         Command::Clear { directory, path } => clear(directory, path)?,
         Command::Create { all, directory, path } => create(all, directory, path)?,
         Command::Delete { directory, path, recurse } => delete(directory, path, recurse)?,
+        Command::List { path, recurse } => list(path, recurse)?,
         Command::Rename { new, old } => rename(new, old)?
     }
 
