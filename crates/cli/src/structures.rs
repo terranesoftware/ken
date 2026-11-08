@@ -41,6 +41,9 @@ pub(super) enum Command {
         #[arg(long, short)]
         recurse: bool
     },
+    Read {
+        path: PathBuf
+    },
     Rename {
         new: PathBuf,
         old: PathBuf

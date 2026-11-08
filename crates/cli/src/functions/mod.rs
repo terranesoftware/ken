@@ -10,5 +10,8 @@ pub(super) use delete::delete;
 mod list;
 pub(super) use list::list;
 
+mod read;
+pub(super) use read::read;
+
 mod rename;
 pub(super) use rename::rename;
