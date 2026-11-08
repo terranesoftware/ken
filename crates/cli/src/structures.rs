@@ -14,5 +14,9 @@ pub(super) enum Command {
     },
     Create {
         path: String
+    },
+    Rename {
+        new: String,
+        old: String
     }
 }
