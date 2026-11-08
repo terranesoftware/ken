@@ -15,6 +15,15 @@ pub(super) enum Command {
     Create {
         path: String
     },
+    Delete {
+        #[arg(long, short)]
+        directory: bool,
+        
+        path: String,
+
+        #[arg(long, requires = "directory", short)]
+        recurse: bool
+    },
     Rename {
         new: String,
         old: String
