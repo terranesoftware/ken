@@ -1,8 +1,8 @@
-use std::{fs::{OpenOptions, create_dir, remove_dir_all}, io::Result};
+use std::{fs::{OpenOptions, create_dir, remove_dir_all}, io::Result, path::PathBuf};
 
 pub(crate) fn clear(
     directory: bool,
-    path: String
+    path: PathBuf
 ) -> Result<()> {
     if directory {
         remove_dir_all(&path)?;

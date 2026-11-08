@@ -1,8 +1,8 @@
-use std::{fs::{remove_dir, remove_dir_all, remove_file}, io::Result};
+use std::{fs::{remove_dir, remove_dir_all, remove_file}, io::Result, path::PathBuf};
 
 pub(crate) fn delete(
     directory: bool,
-    path: String,
+    path: PathBuf,
     recurse: bool
 ) -> Result<()> {
     if directory {

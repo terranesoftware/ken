@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -13,7 +15,7 @@ pub(super) enum Command {
         #[arg(long, short)]
         directory: bool,
         
-        path: String
+        path: PathBuf
     },
     Create {
         #[arg(long, requires = "directory", short)]
@@ -22,19 +24,19 @@ pub(super) enum Command {
         #[arg(long, short)]
         directory: bool,
         
-        path: String
+        path: PathBuf
     },
     Delete {
         #[arg(long, short)]
         directory: bool,
         
-        path: String,
+        path: PathBuf,
 
         #[arg(long, requires = "directory", short)]
         recurse: bool
     },
     Rename {
-        new: String,
-        old: String
+        new: PathBuf,
+        old: PathBuf
     }
 }
