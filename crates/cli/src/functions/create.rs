@@ -1,11 +1,21 @@
-use std::{fs::File, io::Result, path::absolute};
+use std::{fs::{File, create_dir, create_dir_all}, io::Result};
 
-pub(crate) fn create(path: String) -> Result<()> {
-    // Turn the path absolute, doesn't care if the file exists already
-    let path = absolute(path)?;
-    
-    // Creates file if it doesn't exist
-    _ = File::create_new(path)?;
+pub(crate) fn create(
+    all: bool,
+    directory: bool,
+    path: String
+) -> Result<()> {
+    if directory {
+        if all {
+            create_dir_all(path)
+        }
+        else {
+            create_dir(path)
+        }
+    }
+    else {
+        _ = File::create_new(path)?;
 
-    Ok(())
+        Ok(())
+    }
 }

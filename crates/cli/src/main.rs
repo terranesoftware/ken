@@ -11,8 +11,8 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Command::Clear { path } => clear(path)?,
-        Command::Create { path } => create(path)?,
+        Command::Clear { directory, path } => clear(directory, path)?,
+        Command::Create { all, directory, path } => create(all, directory, path)?,
         Command::Delete { directory, path, recurse } => delete(directory, path, recurse)?,
         Command::Rename { new, old } => rename(new, old)?
     }

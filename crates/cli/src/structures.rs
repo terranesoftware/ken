@@ -10,9 +10,18 @@ pub(super) struct Cli {
 #[derive(Subcommand)]
 pub(super) enum Command {
     Clear {
+        #[arg(long, short)]
+        directory: bool,
+        
         path: String
     },
     Create {
+        #[arg(long, requires = "directory", short)]
+        all: bool,
+        
+        #[arg(long, short)]
+        directory: bool,
+        
         path: String
     },
     Delete {

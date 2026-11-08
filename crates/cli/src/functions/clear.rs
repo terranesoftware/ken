@@ -1,12 +1,20 @@
-use std::{fs::{File, canonicalize}, io::Result};
+use std::{fs::{OpenOptions, create_dir, remove_dir_all}, io::Result};
 
-pub(crate) fn clear(path: String) -> Result<()> {
-    // Canonicalize guarantees the path exists already
-    // Using the --overwrite flag without something to overwrite is an error
-    let path = canonicalize(path)?;
-    
-    // Truncates file
-    _ = File::create(path)?;
+pub(crate) fn clear(
+    directory: bool,
+    path: String
+) -> Result<()> {
+    if directory {
+        remove_dir_all(&path)?;
 
-    Ok(())
+        create_dir(path)
+    }
+    else {
+        _ = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(path)?;
+
+        Ok(())
+    }
 }
