@@ -1,6 +1,9 @@
 mod clear;
 pub(super) use clear::clear;
 
+mod copy;
+pub(super) use copy::copy;
+
 mod create;
 pub(super) use create::create;
 

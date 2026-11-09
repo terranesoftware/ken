@@ -17,6 +17,10 @@ pub(super) enum Command {
         
         path: PathBuf
     },
+    Copy {
+        from: PathBuf,
+        to: PathBuf
+    },
     Create {
         #[arg(long, requires = "directory", short)]
         all: bool,
