@@ -5,3 +5,5 @@ edition = "2024"
 license = "Apache-2.0"
 
 [dependencies]
+crossterm = "0.29.0"
+ratatui = "0.30.2"
