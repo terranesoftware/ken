@@ -1,6 +1,6 @@
 use std::{fs, io::Result, path::PathBuf};
 
-pub(crate) fn r#move(
+pub fn r#move(
     from: PathBuf,
     to: PathBuf
 ) -> Result<()> {

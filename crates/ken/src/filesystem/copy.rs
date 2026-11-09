@@ -1,6 +1,6 @@
 use std::{fs, io::Result, path::PathBuf};
 
-pub(crate) fn copy(
+pub fn copy(
     from: PathBuf,
     to: PathBuf
 ) -> Result<()> {

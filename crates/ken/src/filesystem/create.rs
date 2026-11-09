@@ -1,6 +1,6 @@
 use std::{fs::{File, create_dir, create_dir_all}, io::Result, path::PathBuf};
 
-pub(crate) fn create(
+pub fn create(
     all: bool,
     directory: bool,
     path: PathBuf

@@ -1,11 +1,11 @@
-mod functions;
 mod structures;
 
 use std::io::Result;
 
 use clap::Parser;
+use ken::filesystem::{clear, copy, create, delete, list, r#move, read};
 
-use crate::{functions::{clear, copy, create, delete, list, r#move, read}, structures::{Cli, Command}};
+use crate::structures::{Cli, Command};
 
 fn main() -> Result<()> {
     let cli = Cli::parse();

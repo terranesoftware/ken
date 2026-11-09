@@ -1,6 +1,6 @@
 use std::{fs::{OpenOptions, create_dir, remove_dir_all}, io::Result, path::PathBuf};
 
-pub(crate) fn clear(
+pub fn clear(
     directory: bool,
     path: PathBuf
 ) -> Result<()> {

@@ -1,6 +1,6 @@
 use std::{fs::read_dir, io::Result, path::{Path, PathBuf}};
 
-pub(crate) fn list(
+pub fn list(
     path: Option<PathBuf>,
     recurse: bool
 ) -> Result<()> {

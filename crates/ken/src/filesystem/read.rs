@@ -1,5 +1,5 @@
 use std::{fs, io::{Result, Write, stdout}, path::PathBuf};
 
-pub(crate) fn read(path: PathBuf) -> Result<()> {
+pub fn read(path: PathBuf) -> Result<()> {
     stdout().write_all(&fs::read(path)?)
 } 

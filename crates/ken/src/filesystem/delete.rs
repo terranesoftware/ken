@@ -1,6 +1,6 @@
 use std::{fs::{remove_dir, remove_dir_all, remove_file}, io::Result, path::PathBuf};
 
-pub(crate) fn delete(
+pub fn delete(
     directory: bool,
     path: PathBuf,
     recurse: bool
