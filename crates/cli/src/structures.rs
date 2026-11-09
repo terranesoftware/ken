@@ -49,7 +49,7 @@ pub(super) enum Command {
         path: PathBuf
     },
     Rename {
-        new: PathBuf,
-        old: PathBuf
+        from: PathBuf,
+        to: PathBuf
     }
 }

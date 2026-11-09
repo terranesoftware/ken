@@ -1,8 +1,8 @@
 use std::{fs, io::Result, path::PathBuf};
 
 pub(crate) fn rename(
-    new: PathBuf,
-    old: PathBuf
+    from: PathBuf,
+    to: PathBuf
 ) -> Result<()> {
-    fs::rename(old, new)
+    fs::rename(from, to)
 }

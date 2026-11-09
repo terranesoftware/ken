@@ -17,7 +17,7 @@ fn main() -> Result<()> {
         Command::Delete { directory, path, recurse } => delete(directory, path, recurse)?,
         Command::List { path, recurse } => list(path, recurse)?,
         Command::Read { path } => read(path)?,
-        Command::Rename { new, old } => rename(new, old)?
+        Command::Rename { from, to } => rename(from, to)?
     }
 
     Ok(())
