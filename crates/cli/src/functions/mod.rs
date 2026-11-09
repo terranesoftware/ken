@@ -13,8 +13,8 @@ pub(super) use delete::delete;
 mod list;
 pub(super) use list::list;
 
+mod r#move;
+pub(super) use r#move::r#move;
+
 mod read;
 pub(super) use read::read;
-
-mod rename;
-pub(super) use rename::rename;
