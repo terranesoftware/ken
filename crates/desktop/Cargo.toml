@@ -5,4 +5,5 @@ edition = "2024"
 license = "Apache-2.0"
 
 [dependencies]
+wgpu = "30.0.1"
 winit = "0.30.13"
