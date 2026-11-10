@@ -1,4 +1,6 @@
 mod background;
+use std::rc::Rc;
+
 use background::background;
 
 mod bounding;
@@ -7,7 +9,7 @@ use bounding::bounding;
 mod start;
 use start::button;
 
-use ratatui::{Frame, style::Stylize, text::{Line, Span}, widgets::{Block, Borders}};
+use ratatui::{Frame, layout::Rect, style::Stylize, text::{Line, Span}, widgets::{Block, Borders}};
 
 use crate::app::colors::{accent, border, text};
 
@@ -19,7 +21,6 @@ pub(crate) fn landing(
     // Render the background
     background(frame);
 
-    // Content organization
     let areas = bounding(frame, &projects);
 
     // Render the name
