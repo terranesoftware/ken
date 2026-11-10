@@ -2,7 +2,7 @@ mod background;
 
 use std::sync::Arc;
 
-use wgpu::{Adapter, Device, DeviceDescriptor, Instance, Queue, RequestAdapterOptions, Surface, SurfaceConfiguration};
+use wgpu::{Adapter, Backends, Device, DeviceDescriptor, Instance, InstanceDescriptor, Queue, RequestAdapterOptions, Surface, SurfaceConfiguration};
 
 use crate::Error;
 
@@ -17,7 +17,10 @@ pub(crate) struct Gpu {
 
 impl Gpu {
     pub(super) async fn new(rao: Option<RequestAdapterOptions<'_, '_>>) -> Result<Self, Error> {
-        let instance = Instance::default();
+        let instance = Instance::new(InstanceDescriptor {
+            backends: Backends::GL,
+            ..InstanceDescriptor::new_without_display_handle()
+        });
 
         // Speculative, not confirmed whether it works with the window/surface
         let adapter = if let Some(rao) = rao {
