@@ -49,12 +49,12 @@ impl App {
         gpu.surface = unsafe { Some(Arc::new(instance.create_surface_unsafe(target)?)) };
 
         let adapter = &gpu.adapter;
-        let surface = &gpu.surface;
+        let surface = gpu.surface.as_ref().unwrap();
         
         // If the surface isn't supported, retry, guaranteeing it'll work (or if no GPUs are compatible, it'll just error)
-        if !adapter.is_surface_supported(surface.as_ref().unwrap()) {
+        if !adapter.is_surface_supported(surface) {
             let moved_elp = elp.clone();
-            let moved_surface = surface.as_ref().unwrap().clone();
+            let moved_surface = surface.clone();
             spawn(async move {
                 let result = Gpu::new(Some(RequestAdapterOptions {
                     compatible_surface: Some(&moved_surface),
@@ -66,7 +66,13 @@ impl App {
 
         // Create a default config
         let size = window.inner_size();
-        gpu.sc = surface.as_ref().unwrap().get_default_config(adapter, size.width, size.height);
+        gpu.sc = surface.get_default_config(adapter, size.width, size.height);
+
+        let device = &gpu.device;
+        let sc = gpu.sc.as_ref().unwrap();
+
+        // Configure the surface
+        surface.configure(device, sc);
 
         Ok(())
     }
