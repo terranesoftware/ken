@@ -1,3 +1,5 @@
+mod colors;
+
 mod pages;
 use pages::{editor, landing, Page};
 
@@ -11,7 +13,7 @@ pub(super) fn app(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result<(
     loop {
         terminal.draw(|frame| {
             match page {
-                Page::Landing => landing(frame),
+                Page::Landing => landing(frame, vec![]),
                 Page::Editor => editor(frame)
             }
         })?;
