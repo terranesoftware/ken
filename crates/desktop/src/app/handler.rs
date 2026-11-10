@@ -15,6 +15,8 @@ impl ApplicationHandler<Result<Gpu, Error>> for App {
             eprintln!("{:?}\nExiting...", err);
             ael.exit();
         }
+
+        self.window.as_ref().unwrap().request_redraw();
     }
 
     fn user_event(
@@ -30,6 +32,10 @@ impl ApplicationHandler<Result<Gpu, Error>> for App {
                     eprintln!("{:?}\nExiting...", err);
                     ael.exit();
                 }
+
+                if let Some(window) = &self.window {
+                    window.request_redraw();
+                }
             },
             Err(err) => {
                 eprintln!("{:?}\nExiting...", err);
@@ -44,9 +50,15 @@ impl ApplicationHandler<Result<Gpu, Error>> for App {
         window: WindowId,
         we: WindowEvent,
     ) {
-        // Placeholder
-        if we == WindowEvent::CloseRequested {
-            ael.exit();
+        match we {
+            // Placeholder
+            WindowEvent::CloseRequested => ael.exit(),
+            WindowEvent::RedrawRequested => {
+                if let Some(gpu) = &self.gpu {
+                    gpu.background();
+                }
+            }
+            _ => {}
         }
     }
 }

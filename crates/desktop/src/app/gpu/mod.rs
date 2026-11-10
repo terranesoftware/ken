@@ -1,3 +1,5 @@
+mod background;
+
 use std::sync::Arc;
 
 use wgpu::{Adapter, Device, DeviceDescriptor, Instance, Queue, RequestAdapterOptions, Surface, SurfaceConfiguration};
@@ -6,7 +8,7 @@ use crate::Error;
 
 pub(crate) struct Gpu {
     pub(super) adapter: Adapter,
-    device: Device,
+    pub(super) device: Device,
     pub(super) instance: Instance,
     queue: Queue,
     pub(super) sc: Option<SurfaceConfiguration>,
