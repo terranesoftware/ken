@@ -1,30 +1,38 @@
-use wgpu::{Device, DeviceDescriptor, Instance, Queue, RequestAdapterError, RequestAdapterOptions, RequestDeviceError, Surface, SurfaceConfiguration};
+use std::sync::Arc;
 
-pub(super) struct Gpu {
-    configuration: Option<SurfaceConfiguration>,
+use wgpu::{Adapter, Device, DeviceDescriptor, Instance, Queue, RequestAdapterOptions, Surface, SurfaceConfiguration};
+
+use crate::Error;
+
+pub(crate) struct Gpu {
+    pub(super) adapter: Adapter,
     device: Device,
+    pub(super) instance: Instance,
     queue: Queue,
-    surface: Option<Surface<'static>>
-}
-
-// Temporary
-enum Error {
-    RequestAdapter(RequestAdapterError),
-    RequestDevice(RequestDeviceError)
+    pub(super) sc: Option<SurfaceConfiguration>,
+    pub(super) surface: Option<Arc<Surface<'static>>>
 }
 
 impl Gpu {
-    pub(super) async fn new() -> Result<Self, Error> {
+    pub(super) async fn new(rao: Option<RequestAdapterOptions<'_, '_>>) -> Result<Self, Error> {
         let instance = Instance::default();
 
-        let adapter = instance.request_adapter(&RequestAdapterOptions::default()).await.map_err(Error::RequestAdapter)?;
+        // Speculative, not confirmed whether it works with the window/surface
+        let adapter = if let Some(rao) = rao {
+            instance.request_adapter(&rao).await?
+        }
+        else {
+            instance.request_adapter(&RequestAdapterOptions::default()).await?
+        };
 
-        let (device, queue) = adapter.request_device(&DeviceDescriptor::default()).await.map_err(Error::RequestDevice)?;
+        let (device, queue) = adapter.request_device(&DeviceDescriptor::default()).await?;
         
         Ok(Self {
-            configuration: None,
-            device: device,
-            queue: queue,
+            adapter,
+            device,
+            instance,
+            queue,
+            sc: None,
             surface: None
         })
     }
