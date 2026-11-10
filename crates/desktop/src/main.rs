@@ -4,6 +4,9 @@ use app::App;
 mod error;
 use error::Error;
 
+mod event;
+use event::UserEvent;
+
 use tokio::main;
 use winit::event_loop::EventLoop;
 
@@ -12,7 +15,7 @@ use crate::app::Gpu;
 #[main]
 async fn main() -> Result<(), Error> {
     // Create a user callback for GPU initialization
-    let el = EventLoop::<Result<Gpu, Error>>::with_user_event().build()?;
+    let el = EventLoop::<UserEvent>::with_user_event().build()?;
 
     // Pass it in during app creation
     let mut app = App::new(el.create_proxy());

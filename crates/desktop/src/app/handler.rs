@@ -1,9 +1,9 @@
 use winit::{application::ApplicationHandler, dpi::PhysicalPosition, event::WindowEvent, event_loop::ActiveEventLoop, window::{Window, WindowId}};
 
-use crate::{App, Error, Gpu};
+use crate::{App, UserEvent, app::background};
 
 // Will probably add retries or see what type of error it is before exiting
-impl ApplicationHandler<Result<Gpu, Error>> for App {
+impl ApplicationHandler<UserEvent> for App {
     fn resumed(
         &mut self,
         ael: &ActiveEventLoop
@@ -39,24 +39,29 @@ impl ApplicationHandler<Result<Gpu, Error>> for App {
     fn user_event(
         &mut self,
         ael: &ActiveEventLoop,
-        event: Result<Gpu, Error>
+        ue: UserEvent
     ) {
-        match event {
-            Ok(gpu) => {
-                self.gpu = Some(gpu);
-
-                if let Err(err) = self.complete() {
+        match ue {
+            UserEvent::FontSystem(fs) => {
+                self.fs = Some(fs);
+            }
+            UserEvent::Gpu(result) => match result {
+                Ok(gpu) => {
+                    self.gpu = Some(gpu);
+                    
+                    if let Err(err) = self.complete() {
+                        eprintln!("{:?}\nExiting...", err);
+                        ael.exit();
+                    }
+                    
+                    if let Some(window) = &self.window {
+                        window.request_redraw();
+                    }
+                },
+                Err(err) => {
                     eprintln!("{:?}\nExiting...", err);
                     ael.exit();
                 }
-
-                if let Some(window) = &self.window {
-                    window.request_redraw();
-                }
-            },
-            Err(err) => {
-                eprintln!("{:?}\nExiting...", err);
-                ael.exit();
             }
         }
     }
@@ -72,7 +77,7 @@ impl ApplicationHandler<Result<Gpu, Error>> for App {
             WindowEvent::CloseRequested => ael.exit(),
             WindowEvent::RedrawRequested => {
                 if let Some(gpu) = &self.gpu {
-                    gpu.background();
+                    background(gpu);
                 }
             }
             _ => {}

@@ -1,24 +1,34 @@
-mod gpu;
-use std::sync::Arc;
+mod buffers;
+use buffers::Buffers;
 
+mod gpu;
 pub(super) use gpu::Gpu;
 
 mod handler;
 
-use tokio::spawn;
+mod rendering;
+use rendering::background;
+
+use std::sync::Arc;
+
+use glyphon::{FontSystem, SwashCache};
+use tokio::{spawn, task::spawn_blocking};
 use wgpu::{RequestAdapterOptions, SurfaceTargetUnsafe};
 use winit::{event_loop::EventLoopProxy, window::Window};
 
-use crate::Error;
+use crate::{Error, UserEvent};
 
 pub(super) struct App {
-    elp: Arc<EventLoopProxy<Result<Gpu, Error>>>,
+    buffers: Buffers,
+    elp: Arc<EventLoopProxy<UserEvent>>,
+    fs: Option<FontSystem>,
     gpu: Option<Gpu>,
+    sc: SwashCache,
     window: Option<Window>
 }
 
 impl App {
-    pub(super) fn new(elp: EventLoopProxy<Result<Gpu, Error>>) -> Self {
+    pub(super) fn new(elp: EventLoopProxy<UserEvent>) -> Self {
         // Wrap it in an Arc because on some platforms, cloning it is expensive
         let elp = Arc::new(elp);
         
@@ -26,12 +36,21 @@ impl App {
         let moved = elp.clone();
         spawn(async move {
             let result = Gpu::new(None).await;
-            _ = moved.clone().send_event(result);
+            _ = moved.send_event(UserEvent::Gpu(result));
         });
-        
+
+        let moved = elp.clone();
+        spawn_blocking(move || {
+            let fs = FontSystem::new();
+            _ = moved.send_event(UserEvent::FontSystem(fs));
+        });
+
         Self {
+            buffers: Buffers::new(),
             elp,
+            fs: None,
             gpu: None,
+            sc: SwashCache::new(),
             window: None
         }
     }
@@ -60,7 +79,7 @@ impl App {
                     compatible_surface: Some(&moved_surface),
                     ..Default::default()
                 })).await;
-                _ = moved_elp.send_event(result);
+                _ = moved_elp.send_event(UserEvent::Gpu(result));
             });
         }
 
