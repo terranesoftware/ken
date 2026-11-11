@@ -28,7 +28,7 @@ impl ApplicationHandler<UserEvent> for App {
 
         self.window = Some(window);
 
-        if let Err(err) = self.complete() {
+        if let Err(err) = self.gpu() {
             eprintln!("{:?}\nExiting...", err);
             ael.exit();
         }
@@ -42,14 +42,12 @@ impl ApplicationHandler<UserEvent> for App {
         ue: UserEvent
     ) {
         match ue {
-            UserEvent::FontSystem(fs) => {
-                self.fs = Some(fs);
-            }
+            UserEvent::FontSystem(fs) => self.fs = Some(fs),
             UserEvent::Gpu(result) => match result {
                 Ok(gpu) => {
                     self.gpu = Some(gpu);
                     
-                    if let Err(err) = self.complete() {
+                    if let Err(err) = self.gpu() {
                         eprintln!("{:?}\nExiting...", err);
                         ael.exit();
                     }
@@ -62,6 +60,11 @@ impl ApplicationHandler<UserEvent> for App {
                     eprintln!("{:?}\nExiting...", err);
                     ael.exit();
                 }
+            }
+            UserEvent::Text(text) => {
+                self.gpu.as_mut().unwrap().text = Some(text);
+
+                self.text();
             }
         }
     }

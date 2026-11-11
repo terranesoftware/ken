@@ -1,8 +1,8 @@
 mod buffers;
 use buffers::Buffers;
 
-mod gpu;
-pub(super) use gpu::Gpu;
+pub(super) mod gpu;
+pub(crate) use gpu::Gpu;
 
 mod handler;
 
@@ -11,16 +11,15 @@ use rendering::background;
 
 use std::sync::Arc;
 
-use glyphon::{FontSystem, SwashCache};
+use glyphon::{FontSystem, SwashCache, TextAtlas, TextRenderer};
 use tokio::{spawn, task::spawn_blocking};
-use wgpu::{RequestAdapterOptions, SurfaceTargetUnsafe};
+use wgpu::{MultisampleState, SurfaceTargetUnsafe};
 use winit::{event_loop::EventLoopProxy, window::Window};
 
 use crate::{Error, UserEvent};
 
 pub(super) struct App {
     buffers: Buffers,
-    elp: Arc<EventLoopProxy<UserEvent>>,
     fs: Option<FontSystem>,
     gpu: Option<Gpu>,
     sc: SwashCache,
@@ -35,7 +34,7 @@ impl App {
         // Asynchronously initialize the GPU since its expensive
         let moved = elp.clone();
         spawn(async move {
-            let result = Gpu::new(None).await;
+            let result = Gpu::new(moved.clone(), None).await;
             _ = moved.send_event(UserEvent::Gpu(result));
         });
 
@@ -47,7 +46,6 @@ impl App {
 
         Self {
             buffers: Buffers::new(),
-            elp,
             fs: None,
             gpu: None,
             sc: SwashCache::new(),
@@ -55,9 +53,9 @@ impl App {
         }
     }
 
-    fn complete(&mut self) -> Result<(), Error> {
+    fn gpu(&mut self) -> Result<(), Error> {
         // Check if both the GPU and the Window are created, otherwise, wait for the second call
-        let (elp, Some(gpu), Some(window)) = (&self.elp, &mut self.gpu, &self.window) else {
+        let (Some(gpu), Some(window)) = (&mut self.gpu, &self.window) else {
             return Ok(());
         };
 
@@ -70,17 +68,10 @@ impl App {
         let adapter = &gpu.adapter;
         let surface = gpu.surface.as_ref().unwrap();
         
+        // TODO:
         // If the surface isn't supported, retry, guaranteeing it'll work (or if no GPUs are compatible, it'll just error)
         if !adapter.is_surface_supported(surface) {
-            let moved_elp = elp.clone();
-            let moved_surface = surface.clone();
-            spawn(async move {
-                let result = Gpu::new(Some(RequestAdapterOptions {
-                    compatible_surface: Some(&moved_surface),
-                    ..Default::default()
-                })).await;
-                _ = moved_elp.send_event(UserEvent::Gpu(result));
-            });
+            todo!();
         }
 
         // Create a default config
@@ -93,6 +84,28 @@ impl App {
         // Configure the surface
         surface.configure(device, sc);
 
+        // Surface is configured, we're ready to do text
+        self.text();
+
         Ok(())
+    }
+
+    fn text(&mut self) {
+        // This check exists because its technically possible that the Text thread completes before the GPU field gets filled
+        let Some(gpu) = &mut self.gpu else {
+            return;
+        };
+
+        // Make sure both the SurfaceConfiguration and the Text are created, otherwise wait for the second call
+        let (device, queue, Some(sc), Some(text)) = (&gpu.device, &gpu.queue, &gpu.sc, &mut gpu.text) else {
+            return;
+        };
+
+        let mut ta = TextAtlas::new(device, queue, &text.cache, sc.format);
+
+        let tr = TextRenderer::new(&mut ta, device, MultisampleState::default(), None);
+
+        text.ta = Some(ta);
+        text.tr = Some(tr);
     }
 }

@@ -1,20 +1,30 @@
+mod text;
+pub(crate) use text::Text;
+
+use winit::event_loop::EventLoopProxy;
+
 use std::sync::Arc;
 
+use tokio::task::spawn_blocking;
 use wgpu::{Adapter, Backends, Device, DeviceDescriptor, Instance, InstanceDescriptor, Queue, RequestAdapterOptions, Surface, SurfaceConfiguration};
 
-use crate::Error;
+use crate::{Error, UserEvent};
 
 pub(crate) struct Gpu {
     pub(super) adapter: Adapter,
-    pub(super) device: Device,
+    pub(super) device: Arc<Device>,
     pub(super) instance: Instance,
-    pub(super) queue: Queue,
+    pub(super) queue: Arc<Queue>,
     pub(super) sc: Option<SurfaceConfiguration>,
-    pub(super) surface: Option<Arc<Surface<'static>>>
+    pub(super) surface: Option<Arc<Surface<'static>>>,
+    pub(super) text: Option<Text>
 }
 
 impl Gpu {
-    pub(super) async fn new(rao: Option<RequestAdapterOptions<'_, '_>>) -> Result<Self, Error> {
+    pub(super) async fn new(
+        elp: Arc<EventLoopProxy<UserEvent>>,
+        rao: Option<RequestAdapterOptions<'_, '_>>
+    ) -> Result<Self, Error> {
         let instance = Instance::new(InstanceDescriptor {
             backends: Backends::GL,
             ..InstanceDescriptor::new_without_display_handle()
@@ -29,6 +39,14 @@ impl Gpu {
         };
 
         let (device, queue) = adapter.request_device(&DeviceDescriptor::default()).await?;
+        let (device, queue) = (Arc::new(device), Arc::new(queue));
+
+        // Benchmark this later, see if spawning is worth it
+        let moved = device.clone();
+        spawn_blocking(move || {
+            let text = Text::new(moved);
+            _ = elp.send_event(UserEvent::Text(text));
+        });
         
         Ok(Self {
             adapter,
@@ -36,7 +54,8 @@ impl Gpu {
             instance,
             queue,
             sc: None,
-            surface: None
+            surface: None,
+            text: None
         })
     }
 }
