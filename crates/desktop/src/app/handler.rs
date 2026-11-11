@@ -1,6 +1,6 @@
 use winit::{application::ApplicationHandler, dpi::PhysicalPosition, event::WindowEvent, event_loop::ActiveEventLoop, window::{Window, WindowId}};
 
-use crate::{App, UserEvent, app::rendering::render};
+use crate::{App, UserEvent};
 
 // Will probably add retries or see what type of error it is before exiting
 impl ApplicationHandler<UserEvent> for App {
@@ -85,7 +85,7 @@ impl ApplicationHandler<UserEvent> for App {
             // Placeholder
             WindowEvent::CloseRequested => ael.exit(),
             WindowEvent::RedrawRequested => {
-                render(self);
+                self.render();
             }
             _ => {}
         }

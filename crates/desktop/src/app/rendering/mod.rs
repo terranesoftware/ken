@@ -8,31 +8,33 @@ use wgpu::{CommandEncoderDescriptor, CurrentSurfaceTexture, TextureViewDescripto
 
 use crate::App;
 
-pub(super) fn render(app: &mut App) {
-    let Some(gpu) = &app.gpu else {
-        return;
-    };
+impl App {
+    pub(super) fn render(&mut self) {
+        let Some(gpu) = &self.gpu else {
+            return;
+        };
+        
+        let Some(surface) = &gpu.surface else {
+            return;
+        };
+        
+        let frame = match surface.get_current_texture() {
+            CurrentSurfaceTexture::Suboptimal(frame) |
+            CurrentSurfaceTexture::Success(frame) => frame,
+            _ => return
+        };
+        
+        let view = frame.texture.create_view(&TextureViewDescriptor::default());
+        
+        let device = &gpu.device;
+        let mut encoder = device.create_command_encoder(&CommandEncoderDescriptor::default());
     
-    let Some(surface) = &gpu.surface else {
-        return;
-    };
+        let rp = background(&mut encoder, &view);
+        
+        drop(rp);
     
-    let frame = match surface.get_current_texture() {
-        CurrentSurfaceTexture::Suboptimal(frame) |
-        CurrentSurfaceTexture::Success(frame) => frame,
-        _ => return
-    };
-    
-    let view = frame.texture.create_view(&TextureViewDescriptor::default());
-    
-    let device = &gpu.device;
-    let mut encoder = device.create_command_encoder(&CommandEncoderDescriptor::default());
-
-    let rp = background(&mut encoder, &view);
-    
-    drop(rp);
-
-    let queue = &gpu.queue;
-    queue.submit([encoder.finish()]);
-    queue.present(frame);
+        let queue = &gpu.queue;
+        queue.submit([encoder.finish()]);
+        queue.present(frame);
+    }
 }
