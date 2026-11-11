@@ -25,6 +25,12 @@ impl Gpu {
         elp: Arc<EventLoopProxy<UserEvent>>,
         rao: Option<RequestAdapterOptions<'_, '_>>
     ) -> Result<Self, Error> {
+        #[cfg(target_os = "macos")]
+        let instance = Instance::new(InstanceDescriptor {
+            backends: Backends::METAL,
+            ..InstanceDescriptor::new_without_display_handle()
+        });
+        #[cfg(target_os = "windows")]
         let instance = Instance::new(InstanceDescriptor {
             backends: Backends::GL,
             ..InstanceDescriptor::new_without_display_handle()
