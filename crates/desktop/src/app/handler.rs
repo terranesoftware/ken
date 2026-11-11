@@ -1,6 +1,6 @@
 use winit::{application::ApplicationHandler, dpi::PhysicalPosition, event::WindowEvent, event_loop::ActiveEventLoop, window::{Window, WindowId}};
 
-use crate::{App, UserEvent, app::rendering::landing};
+use crate::{App, UserEvent, app::rendering::render};
 
 // Will probably add retries or see what type of error it is before exiting
 impl ApplicationHandler<UserEvent> for App {
@@ -42,7 +42,13 @@ impl ApplicationHandler<UserEvent> for App {
         ue: UserEvent
     ) {
         match ue {
-            UserEvent::FontSystem(fs) => self.fs = Some(fs),
+            UserEvent::FontSystem(fs) => {
+                self.fs = Some(fs);
+
+                if let Some(window) = &self.window {
+                    window.request_redraw();
+                }
+            },
             UserEvent::Gpu(result) => match result {
                 Ok(gpu) => {
                     self.gpu = Some(gpu);
@@ -79,12 +85,7 @@ impl ApplicationHandler<UserEvent> for App {
             // Placeholder
             WindowEvent::CloseRequested => ael.exit(),
             WindowEvent::RedrawRequested => {
-                if let (Some(fs), Some(gpu), sc, Some(window)) = (&mut self.fs, &mut self.gpu, &mut self.sc, &self.window) {
-                    if let Err(err) = landing(fs, gpu, &mut self.buffers.landing, sc, window) {
-                        eprintln!("{:?}\nExiting...", err);
-                        ael.exit();
-                    }
-                }
+                render(self);
             }
             _ => {}
         }

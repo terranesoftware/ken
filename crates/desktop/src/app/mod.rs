@@ -7,7 +7,6 @@ pub(crate) use gpu::Gpu;
 mod handler;
 
 mod rendering;
-use rendering::background;
 
 mod utils;
 use utils::area;
