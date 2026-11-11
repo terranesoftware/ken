@@ -22,7 +22,7 @@ use recent::recent;
 mod tagline;
 use tagline::tagline;
 
-use glyphon::Buffer;
+use glyphon::{Buffer, FontSystem};
 
 pub(crate) struct Landing {
     pub(crate) name: Buffer,
@@ -36,7 +36,7 @@ pub(crate) struct Landing {
 }
 
 impl Landing {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             name: name(),
             nc: nc(),
@@ -47,5 +47,19 @@ impl Landing {
             recent: recent(),
             tagline: tagline()
         }
+    }
+
+    pub(crate) fn shape(
+        &mut self,
+        fs: &mut FontSystem
+    ) {
+        self.name.shape_until_scroll(fs, false);
+        self.nc.shape_until_scroll(fs, false);
+        self.new.shape_until_scroll(fs, false);
+        self.oc.shape_until_scroll(fs, false);
+        self.open.shape_until_scroll(fs, false);
+        self.re.shape_until_scroll(fs, false);
+        self.recent.shape_until_scroll(fs, false);
+        self.tagline.shape_until_scroll(fs, false);
     }
 }
