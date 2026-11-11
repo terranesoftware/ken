@@ -7,7 +7,7 @@ pub(crate) struct Text {
     pub(crate) cache: Cache,
     pub(crate) ta: Option<TextAtlas>,
     pub(crate) tr: Option<TextRenderer>,
-    viewport: Viewport
+    pub(crate) viewport: Viewport
 }
 
 impl Text {
