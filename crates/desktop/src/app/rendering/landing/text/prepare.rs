@@ -2,8 +2,9 @@ use std::sync::Arc;
 
 use glyphon::{Color, FontSystem, Resolution, SwashCache, TextArea, TextAtlas, TextBounds, TextRenderer, Viewport};
 use wgpu::{Device, Queue, SurfaceConfiguration};
+use winit::window::Window;
 
-use crate::{Error, app::buffers::Landing};
+use crate::{Error, app::{area, buffers::Landing, utils::center}};
 
 pub(crate) fn prepare(
     device: &Arc<Device>,
@@ -14,22 +15,28 @@ pub(crate) fn prepare(
     swc: &mut SwashCache,
     ta: &mut TextAtlas,
     tr: &mut TextRenderer,
-    viewport: &mut Viewport
+    viewport: &mut Viewport,
+    window: &Window
 ) -> Result<(), Error> {
     landing.shape(fs);
     
     viewport.update(&queue, Resolution { height: suc.height, width: suc.width });
 
+    let wd = window.inner_size();
+
+    let top = (wd.height as f32 - 340.0) / 2.0;
     tr.prepare(&device, &queue, fs, ta, viewport, [
-        TextArea {
-            bounds: TextBounds::default(),
-            buffer: &landing.name,
-            custom_glyphs: &[],
-            default_color: Color::rgb(41, 40, 35),
-            left: 40.0,
-            scale: 1.0,
-            top: 40.0
-        }
+        area(&landing.name, center(&landing.name, wd.width as f32), top),
+        area(&landing.tagline, center(&landing.name, wd.width as f32), top + 48.0),
+        
+        /* area(&landing.new, left, top),
+        area(&landing.nc, left, top),
+
+        area(&landing.open, left, top),
+        area(&landing.oc, left, top),
+
+        area(&landing.recent, left, top),
+        area(&landing.re, left, top) */
     ], swc)?;
 
     Ok(())

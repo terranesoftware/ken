@@ -79,8 +79,8 @@ impl ApplicationHandler<UserEvent> for App {
             // Placeholder
             WindowEvent::CloseRequested => ael.exit(),
             WindowEvent::RedrawRequested => {
-                if let (Some(fs), Some(gpu), sc) = (&mut self.fs, &mut self.gpu, &mut self.sc) {
-                    if let Err(err) = landing(fs, gpu, &mut self.buffers.landing, sc) {
+                if let (Some(fs), Some(gpu), sc, Some(window)) = (&mut self.fs, &mut self.gpu, &mut self.sc, &self.window) {
+                    if let Err(err) = landing(fs, gpu, &mut self.buffers.landing, sc, window) {
                         eprintln!("{:?}\nExiting...", err);
                         ael.exit();
                     }

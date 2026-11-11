@@ -9,6 +9,9 @@ mod handler;
 mod rendering;
 use rendering::background;
 
+mod utils;
+use utils::area;
+
 use std::sync::Arc;
 
 use glyphon::{FontSystem, SwashCache, TextAtlas, TextRenderer};

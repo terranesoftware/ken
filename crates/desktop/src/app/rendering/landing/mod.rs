@@ -3,6 +3,7 @@ mod text;
 use glyphon::{FontSystem, SwashCache};
 
 use wgpu::{CommandEncoderDescriptor, CurrentSurfaceTexture, TextureViewDescriptor};
+use winit::window::Window;
 
 use crate::{Error, Gpu, app::{background, buffers::Landing}};
 
@@ -10,7 +11,8 @@ pub(crate) fn landing(
     fs: &mut FontSystem,
     gpu: &mut Gpu,
     landing: &mut Landing,
-    swc: &mut SwashCache
+    swc: &mut SwashCache,
+    window: &Window
 ) -> Result<(), Error> {
     let (Some(suc), Some(text)) = (gpu.sc.as_ref(), gpu.text.as_mut()) else {
         return Ok(());
@@ -20,7 +22,7 @@ pub(crate) fn landing(
         return Ok(());
     };
     
-    text::prepare(&gpu.device, fs, landing, &gpu.queue, suc, swc, ta, tr, viewport)?;
+    text::prepare(&gpu.device, fs, landing, &gpu.queue, suc, swc, ta, tr, viewport, window)?;
     
     let Some(surface) = &gpu.surface else {
         return Ok(());
