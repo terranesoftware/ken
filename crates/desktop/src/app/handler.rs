@@ -1,6 +1,6 @@
 use winit::{application::ApplicationHandler, dpi::PhysicalPosition, event::WindowEvent, event_loop::ActiveEventLoop, window::{Window, WindowId}};
 
-use crate::{App, UserEvent, app::background};
+use crate::{App, UserEvent, app::rendering::landing};
 
 // Will probably add retries or see what type of error it is before exiting
 impl ApplicationHandler<UserEvent> for App {
@@ -77,7 +77,7 @@ impl ApplicationHandler<UserEvent> for App {
             WindowEvent::CloseRequested => ael.exit(),
             WindowEvent::RedrawRequested => {
                 if let Some(gpu) = &self.gpu {
-                    background(gpu);
+                    landing(gpu, &mut self.buffers.landing);
                 }
             }
             _ => {}

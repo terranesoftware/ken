@@ -1,24 +1,10 @@
-use wgpu::{Color, CommandEncoderDescriptor, CurrentSurfaceTexture, LoadOp, Operations, RenderPassColorAttachment, RenderPassDescriptor, StoreOp, TextureViewDescriptor};
+use wgpu::{Color, CommandEncoder, LoadOp, Operations, RenderPass, RenderPassColorAttachment, RenderPassDescriptor, StoreOp, TextureView};
 
-use crate::Gpu;
-
-pub(crate) fn background(gpu: &Gpu) {
-    let Some(surface) = &gpu.surface else {
-        return;
-    };
-    
-    let frame = match surface.get_current_texture() {
-        CurrentSurfaceTexture::Suboptimal(frame) |
-        CurrentSurfaceTexture::Success(frame) => frame,
-        _ => return
-    };
-    
-    let view = frame.texture.create_view(&TextureViewDescriptor::default());
-    
-    let device = &gpu.device;
-    let mut encoder = device.create_command_encoder(&CommandEncoderDescriptor::default());
-    
-    _ = encoder.begin_render_pass(&RenderPassDescriptor {
+pub(crate) fn background<'a>(
+    encoder: &'a mut CommandEncoder,
+    view: &TextureView
+) -> RenderPass<'a> {
+    encoder.begin_render_pass(&RenderPassDescriptor {
         color_attachments: &[
             Some(RenderPassColorAttachment {
                 depth_slice: None,
@@ -37,9 +23,5 @@ pub(crate) fn background(gpu: &Gpu) {
         ],
         label: Some("background"),
         ..Default::default()
-    });
-    
-    let queue = &gpu.queue;
-    queue.submit([encoder.finish()]);
-    queue.present(frame);
+    })
 }
