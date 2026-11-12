@@ -1,6 +1,6 @@
 use winit::{application::ApplicationHandler, dpi::PhysicalPosition, event::WindowEvent, event_loop::ActiveEventLoop, window::{Window, WindowId}};
 
-use crate::{App, UserEvent};
+use crate::{App, UserEvent, app::rendering::background};
 
 // Will probably add retries or see what type of error it is before exiting
 impl ApplicationHandler<UserEvent> for App {
@@ -28,11 +28,14 @@ impl ApplicationHandler<UserEvent> for App {
 
         self.window = Some(window);
 
+        // Complete the GPU if possible
         if let Err(err) = self.gpu() {
             eprintln!("{:?}\nExiting...", err);
             ael.exit();
         }
 
+        // Attempt to render and request a redraw
+        self.render(background);
         self.window.as_ref().unwrap().request_redraw();
     }
 
@@ -42,22 +45,19 @@ impl ApplicationHandler<UserEvent> for App {
         ue: UserEvent
     ) {
         match ue {
-            UserEvent::FontSystem(fs) => {
-                self.fs = Some(fs);
-
-                if let Some(window) = &self.window {
-                    window.request_redraw();
-                }
-            },
+            UserEvent::FontSystem(fs) => self.fs = Some(fs),
             UserEvent::Gpu(result) => match result {
                 Ok(gpu) => {
                     self.gpu = Some(gpu);
-                    
+
+                    // Complete the GPU if possible
                     if let Err(err) = self.gpu() {
                         eprintln!("{:?}\nExiting...", err);
                         ael.exit();
                     }
                     
+                    // Attempt to render and request a redraw
+                    self.render(background);
                     if let Some(window) = &self.window {
                         window.request_redraw();
                     }
@@ -84,9 +84,10 @@ impl ApplicationHandler<UserEvent> for App {
         match we {
             // Placeholder
             WindowEvent::CloseRequested => ael.exit(),
-            WindowEvent::RedrawRequested => {
-                self.render();
-            }
+            WindowEvent::RedrawRequested => self.present(),
+            WindowEvent::Occluded(false) => if let Some(window) = &self.window {
+                window.request_redraw();
+            },
             _ => {}
         }
     }
