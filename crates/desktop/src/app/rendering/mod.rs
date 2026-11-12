@@ -31,6 +31,14 @@ impl App {
 
         // Get the current frame
         let frame = match surface.get_current_texture() {
+            CurrentSurfaceTexture::Occluded => {
+                if let Some(window) = &self.window {
+                    return window.request_redraw();
+                }
+                else {
+                    return;
+                }
+            }
             CurrentSurfaceTexture::Suboptimal(frame) |
             CurrentSurfaceTexture::Success(frame) => frame,
             _ => return
