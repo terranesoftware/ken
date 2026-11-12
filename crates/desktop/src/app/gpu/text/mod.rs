@@ -1,3 +1,5 @@
+mod complete;
+
 use std::sync::Arc;
 
 use glyphon::{Cache, TextAtlas, TextRenderer, Viewport};

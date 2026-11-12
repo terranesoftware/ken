@@ -1,3 +1,5 @@
+mod complete;
+
 mod text;
 pub(crate) use text::Text;
 
