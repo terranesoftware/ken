@@ -39,6 +39,7 @@ impl App {
             _ = moved.send_event(UserEvent::Gpu(result));
         });
 
+        // Asynchronously initialize the FontSystem
         let moved = elp.clone();
         spawn_blocking(move || {
             let mut fs = FontSystem::new();

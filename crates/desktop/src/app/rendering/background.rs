@@ -1,9 +1,9 @@
-use wgpu::{Color, CommandEncoder, LoadOp, Operations, RenderPass, RenderPassColorAttachment, RenderPassDescriptor, StoreOp, TextureView};
+use wgpu::{Color, CommandEncoder, LoadOp, Operations, RenderPassColorAttachment, RenderPassDescriptor, StoreOp, TextureView};
 
 pub(crate) fn background<'a>(
     encoder: &'a mut CommandEncoder,
     view: &TextureView
-) -> RenderPass<'a> {
+) {
     encoder.begin_render_pass(&RenderPassDescriptor {
         color_attachments: &[
             Some(RenderPassColorAttachment {
@@ -23,5 +23,5 @@ pub(crate) fn background<'a>(
         ],
         label: Some("background"),
         ..Default::default()
-    })
+    });
 }
