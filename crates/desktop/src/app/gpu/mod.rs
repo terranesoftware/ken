@@ -6,7 +6,7 @@ use winit::event_loop::EventLoopProxy;
 use std::sync::Arc;
 
 use tokio::task::spawn_blocking;
-use wgpu::{Adapter, Backends, Device, DeviceDescriptor, Instance, InstanceDescriptor, Queue, RequestAdapterOptions, Surface, SurfaceConfiguration};
+use wgpu::{Adapter, Backends, Device, DeviceDescriptor, Instance, InstanceDescriptor, Queue, RequestAdapterOptions, Surface, SurfaceConfiguration, Texture, TextureView};
 
 use crate::{Error, UserEvent};
 
@@ -17,7 +17,9 @@ pub(crate) struct Gpu {
     pub(super) queue: Arc<Queue>,
     pub(super) sc: Option<SurfaceConfiguration>,
     pub(super) surface: Option<Arc<Surface<'static>>>,
-    pub(super) text: Option<Text>
+    pub(super) text: Option<Text>,
+    pub(super) texture: Option<Texture>,
+    pub(super) view: Option<TextureView>
 }
 
 impl Gpu {
@@ -53,7 +55,7 @@ impl Gpu {
             let text = Text::new(moved);
             _ = elp.send_event(UserEvent::Text(text));
         });
-        
+
         Ok(Self {
             adapter,
             device,
@@ -61,7 +63,9 @@ impl Gpu {
             queue,
             sc: None,
             surface: None,
-            text: None
+            text: None,
+            texture: None,
+            view: None
         })
     }
 }

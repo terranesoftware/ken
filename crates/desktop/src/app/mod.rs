@@ -15,7 +15,7 @@ use std::sync::Arc;
 
 use glyphon::{FontSystem, SwashCache, TextAtlas, TextRenderer};
 use tokio::{spawn, task::spawn_blocking};
-use wgpu::{MultisampleState, SurfaceTargetUnsafe};
+use wgpu::{Extent3d, MultisampleState, SurfaceTargetUnsafe, TextureDescriptor, TextureDimension, TextureUsages, TextureViewDescriptor};
 use winit::{event_loop::EventLoopProxy, window::Window};
 
 use crate::{Error, UserEvent};
@@ -86,6 +86,36 @@ impl App {
         // Create a default config
         let size = window.inner_size();
         gpu.sc = surface.get_default_config(adapter, size.width, size.height);
+
+        let device = &gpu.device;
+        let sc = gpu.sc.as_mut().unwrap();
+
+        // Get the maximum height of any monitor and maximum width of any monitor
+        let (height, width) = window.available_monitors().fold(
+            (0, 0),
+            |(height, width), monitor| (height.max(monitor.size().height), width.max(monitor.size().width))
+        );
+        
+        // Create a persistent texture for efficiency (retained rendering)
+        sc.usage |= TextureUsages::COPY_DST;
+        let texture = device.create_texture(&TextureDescriptor {
+            dimension: TextureDimension::D2,
+            format: sc.format,
+            label: None,
+            mip_level_count: 1,
+            sample_count: 1,
+            size: Extent3d {
+                depth_or_array_layers: 1,
+                height,
+                width,
+            },
+            usage: TextureUsages::COPY_SRC | TextureUsages::RENDER_ATTACHMENT,
+            view_formats: &[]
+        });
+        let view = texture.create_view(&TextureViewDescriptor::default());
+        
+        gpu.texture = Some(texture);
+        gpu.view = Some(view);
 
         let device = &gpu.device;
         let sc = gpu.sc.as_ref().unwrap();
