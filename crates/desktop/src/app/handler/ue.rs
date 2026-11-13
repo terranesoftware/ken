@@ -52,7 +52,12 @@ impl App {
                 }
             }
             UserEvent::Window(id, result) => match result {
-                Ok(page) => _ = self.windows.insert(id, Window::Ready(page)),
+                Ok(page) => {
+                    let window = page.window();
+                    _ = self.windows.insert(id, Window::Ready(page));
+
+                    window.request_redraw();
+                },
                 Err(err) => {
                     eprintln!("{:?}\nExiting...", err);
                     ael.exit();

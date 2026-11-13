@@ -44,10 +44,10 @@ impl Page {
         }
     }
 
-    pub(crate) fn window(&self) -> &Window {
+    pub(crate) fn window(&self) -> Arc<Window> {
         match self {
-            Page::Editor(editor) => &editor.window,
-            Page::Landing(landing) => &landing.window
+            Page::Editor(editor) => editor.window.clone(),
+            Page::Landing(landing) => landing.window.clone()
         }
     }
 }
