@@ -1,5 +1,5 @@
-mod cache;
-use cache::Cache;
+/* mod cache;
+use cache::Cache; */
 
 mod handler;
 
@@ -22,7 +22,7 @@ use winit::{event_loop::EventLoopProxy, window::WindowId};
 use crate::UserEvent;
 
 pub(super) struct App {
-    cache: Cache,
+    // cache: Cache,
     elp: Arc<EventLoopProxy<UserEvent>>,
     resources: Option<Resources>,
     windows: HashMap<WindowId, Window>
@@ -41,7 +41,7 @@ impl App {
         });
 
         Self {
-            cache: Cache::new(),
+            // cache: Cache::new(),
             elp,
             resources: None,
             windows: HashMap::new()
