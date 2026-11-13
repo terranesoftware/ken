@@ -13,9 +13,8 @@ impl App {
             // Placeholder
             WindowEvent::CloseRequested => ael.exit(),
             WindowEvent::RedrawRequested => self.present(window),
-            WindowEvent::Occluded(false) => match self.windows.get(&window).unwrap() {
-                Window::Ready(page) => page.window().request_redraw(),
-                _ => ()
+            WindowEvent::Occluded(false) => if let Some(window) = self.windows.get(&window) && let Window::Ready(page) = window {
+                page.window().request_redraw();
             }
             _ => {}
         }
