@@ -4,19 +4,24 @@ pub(super) use background::background;
 mod landing;
 
 use wgpu::{CommandEncoder, CommandEncoderDescriptor, CurrentSurfaceTexture, Extent3d, Origin3d, TexelCopyTextureInfo, TextureAspect, TextureView};
+use winit::window::WindowId;
 
-use crate::App;
+use crate::{App, app::window::Window};
 
 impl App {
-    pub(super) fn present(&mut self) {
-        // We can only present with the GPU
-        let Some(gpu) = &self.gpu else {
-            return;
-        };
-        
-        // Get everything we need to present from the GPU
-        let (device, Some(sc), Some(surface), Some(texture)) = (&gpu.device, &gpu.sc, &gpu.surface, &gpu.texture) else {
-            return;
+    pub(super) fn present(
+        &mut self,
+        window: WindowId
+    ) {
+        let window = self.windows.get(&window).unwrap();
+        let (device, queue, sc, surface, texture) = match window {
+            Window::Pending(_) => return,
+            Window::Ready(page) => {
+                let resources = page.resources();
+                let gpu = &resources.gpu;
+
+                (&gpu.device, &gpu.queue, &gpu.sc, &gpu.surface, &gpu.texture)
+            }
         };
         
         // Get the current frame
@@ -47,12 +52,11 @@ impl App {
         });
         
         // Submit the frame
-        let queue = &gpu.queue;
         queue.submit([encoder.finish()]);
         queue.present(frame);
     }
     
-    pub(super) fn render(
+    /* pub(super) fn render(
         &self,
         function: fn(&mut CommandEncoder, &TextureView)
     ) {
@@ -75,5 +79,5 @@ impl App {
         // Submit the frame
         let queue = &gpu.queue;
         queue.submit([encoder.finish()]);
-    }
+    } */
 }

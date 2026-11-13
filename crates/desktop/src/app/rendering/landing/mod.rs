@@ -1,12 +1,6 @@
-mod text;
+// mod text;
 
-use glyphon::{FontSystem, SwashCache};
-
-use winit::window::Window;
-
-use crate::{Error, Gpu, app::buffers::Landing};
-
-pub(crate) fn landing(
+/* pub(crate) fn landing(
     fs: &mut FontSystem,
     gpu: &mut Gpu,
     landing: &mut Landing,
@@ -18,4 +12,4 @@ pub(crate) fn landing(
     // text::render(&mut rp, ta, tr, viewport);
 
     Ok(())
-}
+} */

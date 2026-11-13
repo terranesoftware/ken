@@ -24,7 +24,7 @@ use tagline::tagline;
 
 use glyphon::{Buffer, FontSystem};
 
-pub(crate) struct Landing {
+pub(crate) struct Buffers {
     pub(crate) name: Buffer,
     pub(crate) nc: Buffer, // New Command
     pub(crate) new: Buffer,
@@ -35,7 +35,7 @@ pub(crate) struct Landing {
     pub(crate) tagline: Buffer
 }
 
-impl Landing {
+impl Buffers {
     pub(crate) fn new() -> Self {
         Self {
             name: name(),

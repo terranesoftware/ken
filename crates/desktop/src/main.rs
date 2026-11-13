@@ -7,10 +7,11 @@ use error::Error;
 mod event;
 use event::UserEvent;
 
+mod page;
+use page::Page;
+
 use tokio::main;
 use winit::event_loop::EventLoop;
-
-use crate::app::Gpu;
 
 #[main]
 async fn main() -> Result<(), Error> {

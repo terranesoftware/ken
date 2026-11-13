@@ -1,6 +1,9 @@
 mod glyphon;
 use glyphon::GlyphonError;
 
+mod tokio;
+use tokio::TokioError;
+
 mod wgpu;
 use wgpu::WgpuError;
 
@@ -11,6 +14,7 @@ use winit::WinitError;
 #[derive(Debug)]
 pub(super) enum Error {
     Glyphon(GlyphonError),
+    Tokio(TokioError),
     Wgpu(WgpuError),
     Winit(WinitError)
 }

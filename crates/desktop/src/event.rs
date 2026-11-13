@@ -1,9 +1,8 @@
-use glyphon::FontSystem;
+use winit::window::WindowId;
 
-use crate::{Error, Gpu, app::gpu::Text};
+use crate::{Error, Page, app::resources::{Gpu, Text}};
 
 pub(super) enum UserEvent {
-    FontSystem(FontSystem),
-    Gpu(Result<Gpu, Error>),
-    Text(Text)
+    Resources(Result<(Result<Gpu, Error>, Text), Error>),
+    Window(WindowId, Result<Page, Error>)
 }
