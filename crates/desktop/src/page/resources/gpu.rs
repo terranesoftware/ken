@@ -17,17 +17,12 @@ pub(crate) struct Gpu {
 impl Gpu {
     pub(super) fn init(
         gpu: Arc<AppGpu>,
+        surface: Surface<'static>,
         window: Arc<Window>
     ) -> Result<(
         SurfaceConfiguration,
         Surface<'static>
     ), Error> {
-        let instance = &gpu.instance;
-        
-        // Create an unsafe target (wrapping this in an Arc is OD) and make a surface out of it
-        let target = unsafe { SurfaceTargetUnsafe::from_display_and_window(&window, &window)? };
-        let surface = unsafe { instance.create_surface_unsafe(target)? };
-        
         let adapter = &gpu.adapter;
         
         // TODO:
@@ -40,10 +35,6 @@ impl Gpu {
         let size = window.inner_size();
         let sc = surface.get_default_config(adapter, size.width, size.height).unwrap();
         
-        let device = &gpu.device;
-        // Configure the surface
-        surface.configure(device, &sc);
-
         Ok((sc, surface))
     }
 
@@ -77,6 +68,9 @@ impl Gpu {
             view_formats: &[]
         });
         let view = texture.create_view(&TextureViewDescriptor::default());
+
+        // Configure the surface
+        surface.configure(&device, &sc);
         
         Self {
             device: device.clone(),

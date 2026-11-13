@@ -2,6 +2,7 @@ use tokio::task::JoinError;
 
 use crate::Error;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub(crate) enum TokioError {
     Join(JoinError)

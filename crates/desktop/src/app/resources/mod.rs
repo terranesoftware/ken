@@ -12,7 +12,7 @@ use crate::Error;
 
 pub(super) struct Resources {
     pub(super) gpu: Arc<Gpu>,
-    pub(super) text: Text
+    pub(super) text: Arc<Text>
 }
 
 impl Resources {
@@ -22,7 +22,7 @@ impl Resources {
     ) -> Self {
         Self {
             gpu: Arc::new(gpu),
-            text
+            text: Arc::new(text)
         }
     }
     

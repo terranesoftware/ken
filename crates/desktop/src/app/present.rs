@@ -1,9 +1,4 @@
-mod background;
-pub(super) use background::background;
-
-mod landing;
-
-use wgpu::{CommandEncoder, CommandEncoderDescriptor, CurrentSurfaceTexture, Extent3d, Origin3d, TexelCopyTextureInfo, TextureAspect, TextureView};
+use wgpu::{CommandEncoderDescriptor, CurrentSurfaceTexture, Extent3d, Origin3d, TexelCopyTextureInfo, TextureAspect};
 use winit::window::WindowId;
 
 use crate::{App, app::window::Window};
@@ -55,29 +50,4 @@ impl App {
         queue.submit([encoder.finish()]);
         queue.present(frame);
     }
-    
-    /* pub(super) fn render(
-        &self,
-        function: fn(&mut CommandEncoder, &TextureView)
-    ) {
-        // We can only render with the GPU
-        let Some(gpu) = &self.gpu else {
-            return;
-        };
-
-        // Get everything we need to render from the GPU
-        let (device, Some(view)) = (&gpu.device, &gpu.view) else {
-            return;
-        };
-
-        // Create the encoder using the device
-        let mut encoder = device.create_command_encoder(&CommandEncoderDescriptor::default());
-        
-        // Whatever thing to render
-        function(&mut encoder, view);
-
-        // Submit the frame
-        let queue = &gpu.queue;
-        queue.submit([encoder.finish()]);
-    } */
 }

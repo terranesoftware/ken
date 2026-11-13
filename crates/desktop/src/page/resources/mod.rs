@@ -1,30 +1,34 @@
 mod gpu;
-use std::sync::Arc;
-
-use gpu::Gpu;
+pub(super) use gpu::Gpu;
 
 mod text;
-use text::Text;
+pub(super) use text::Text;
+
+use std::sync::Arc;
+
 use tokio::task::spawn_blocking;
+use wgpu::Surface;
 use winit::window::Window;
 
-use crate::{Error, app::resources::Gpu as AppGpu};
+use crate::{Error, app::resources::{Gpu as AppGpu, Text as AppText}};
 
 pub(crate) struct Resources {
-    pub(crate) gpu: Gpu,
-    pub(crate) text: Text
+    pub(crate) gpu: Arc<Gpu>,
+    pub(crate) text: Arc<Text>
 }
 
 impl Resources {
     pub(super) async fn new(
         gpu: Arc<AppGpu>,
+        surface: Surface<'static>,
+        text: Arc<AppText>,
         window: Arc<Window>
     ) -> Result<Self, Error> {
         let device = gpu.device.clone();
         let queue = gpu.queue.clone();
-        
+
         let moved = window.clone();
-        let init = spawn_blocking(|| Gpu::init(gpu, moved));
+        let init = spawn_blocking(|| Gpu::init(gpu, surface, moved));
         
         let (cache, viewport) = Text::init(&device);
 
@@ -35,10 +39,13 @@ impl Resources {
         let md = device.clone();
         let mq = queue.clone();
         let gpu = spawn_blocking(|| Gpu::complete(md, mq, sc, surface, window));
-        let text = spawn_blocking(move || Text::complete(cache, device, queue, tf, viewport));
 
-        let gpu = gpu.await?;
-        let text = text.await?;
+        let fs = text.fs.clone();
+        let sc = text.sc.clone();
+        let text = spawn_blocking(move || Text::complete(cache, fs, device, queue, sc, tf, viewport));
+
+        let gpu = Arc::new(gpu.await?);
+        let text = Arc::new(text.await?);
         
         Ok(Self {
             gpu,

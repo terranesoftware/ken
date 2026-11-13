@@ -12,7 +12,10 @@ impl ApplicationHandler<UserEvent> for App {
         &mut self,
         ael: &ActiveEventLoop
     ) {
-        self.r(ael);
+        if let Err(err) = self.r(ael) {
+            println!("{:?}\nExiting...", err);
+            ael.exit();
+        };
     }
 
     fn user_event(
@@ -20,7 +23,10 @@ impl ApplicationHandler<UserEvent> for App {
         ael: &ActiveEventLoop,
         ue: UserEvent
     ) {
-        self.ue(ael, ue);
+        if let Err(err) = self.ue(ael, ue) {
+            println!("{:?}\nExiting...", err);
+            ael.exit();
+        }
     }
 
     fn window_event(

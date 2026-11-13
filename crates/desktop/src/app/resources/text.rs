@@ -1,8 +1,10 @@
+use std::sync::{Arc, RwLock};
+
 use glyphon::{FontSystem, SwashCache};
 
 pub(crate) struct Text {
-    pub(super) fs: FontSystem,
-    pub(super) sc: SwashCache
+    pub(crate) fs: Arc<RwLock<FontSystem>>,
+    pub(crate) sc: Arc<RwLock<SwashCache>>
 }
 
 impl Text {
@@ -16,8 +18,8 @@ impl Text {
         database.load_font_data(include_bytes!("../../../fonts/Righteous-Regular.ttf").to_vec());
 
         Self {
-            fs,
-            sc: SwashCache::new()
+            fs: Arc::new(RwLock::new(fs)),
+            sc: Arc::new(RwLock::new(SwashCache::new()))
         }
     }
 }

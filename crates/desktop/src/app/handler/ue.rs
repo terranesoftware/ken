@@ -1,14 +1,16 @@
+use std::sync::Arc;
+
 use tokio::spawn;
 use winit::event_loop::ActiveEventLoop;
 
-use crate::{App, Page, UserEvent, app::{Resources, window::Window}};
+use crate::{App, Error, Page, UserEvent, app::{Resources, window::Window}};
 
 impl App {
     pub(super) fn ue(
         &mut self,
         ael: &ActiveEventLoop,
         ue: UserEvent,
-    ) {
+    ) -> Result<(), Error> {
         match ue {
             UserEvent::Resources(result) => match result {
                 Ok((result, text)) => match result {
@@ -16,18 +18,26 @@ impl App {
                         let resources = Resources::new(gpu, text);
 
                         // Find all the pending windows and drain them
-                        self.windows.extract_if(|_, value| matches!(value, Window::Pending(_))).for_each(|(id, window)| {
-                            let gpu = resources.gpu.clone();
+                        self.windows.extract_if(|_, value| matches!(value, Window::Pending(_))).try_for_each(|(id, window)| {
                             let elp = self.elp.clone();
-                            let Window::Pending(window) = window else {
-                                unreachable!();
+                            let gpu = resources.gpu.clone();
+                            let text = resources.text.clone();
+                            let window = match window {
+                                Window::Pending(window) => Arc::new(window),
+                                _ => unreachable!()
                             };
+
+                            let instance = &gpu.instance;
+                            let surface = instance.create_surface(window.clone())?;
                             
                             spawn(async move {
-                                let result = Page::landing(gpu, window).await;
+                                let result = Page::landing(gpu, surface, text, window).await;
+                                
                                 _ = elp.send_event(UserEvent::Window(id, result));
                             });
-                        });
+
+                            Ok::<(), Error>(())
+                        })?;
                         
                         self.resources = Some(resources);
                     },
@@ -42,12 +52,14 @@ impl App {
                 }
             }
             UserEvent::Window(id, result) => match result {
-                Ok(page) => *self.windows.get_mut(&id).unwrap() = Window::Ready(page),
+                Ok(page) => _ = self.windows.insert(id, Window::Ready(page)),
                 Err(err) => {
                     eprintln!("{:?}\nExiting...", err);
                     ael.exit();
                 }
             }
         }
+
+        Ok(())
     }
 }

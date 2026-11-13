@@ -25,14 +25,14 @@ use tagline::tagline;
 use glyphon::{Buffer, FontSystem};
 
 pub(crate) struct Buffers {
-    pub(crate) name: Buffer,
-    pub(crate) nc: Buffer, // New Command
-    pub(crate) new: Buffer,
-    pub(crate) oc: Buffer, // Open Command
-    pub(crate) open: Buffer,
-    pub(crate) re: Buffer, // Recents Empty
-    pub(crate) recent: Buffer,
-    pub(crate) tagline: Buffer
+    pub(super) name: Buffer,
+    pub(super) nc: Buffer, // New Command
+    pub(super) new: Buffer,
+    pub(super) oc: Buffer, // Open Command
+    pub(super) open: Buffer,
+    pub(super) re: Buffer, // Recents Empty
+    pub(super) recent: Buffer,
+    pub(super) tagline: Buffer
 }
 
 impl Buffers {
@@ -49,7 +49,7 @@ impl Buffers {
         }
     }
 
-    pub(crate) fn shape(
+    pub(super) fn shape(
         &mut self,
         fs: &mut FontSystem
     ) {

@@ -3,13 +3,10 @@ use cache::Cache; */
 
 mod handler;
 
-mod rendering;
+mod present;
 
 pub(super) mod resources;
 use resources::Resources;
-
-mod utils;
-use utils::area;
 
 mod window;
 use window::Window;
