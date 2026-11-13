@@ -20,13 +20,14 @@ pub(crate) fn prepare(
     buffers.shape(fs);
     
     let queue = &gpu.queue;
-    let suc = &gpu.sc;
+    let texture = &gpu.texture;
     let viewport = &text.viewport;
+
     {
         let viewport = &mut viewport.write().unwrap();
         viewport.update(queue, Resolution {
-            height: suc.height,
-            width: suc.width
+            height: texture.height(),
+            width: texture.width()
         });
     }
     
