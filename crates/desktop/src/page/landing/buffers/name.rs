@@ -1,16 +1,10 @@
-use glyphon::{Attrs, Buffer, Color, Family, Metrics, Shaping, Weight};
+use glyphon::{Attrs, Buffer, Color, Metrics, Shaping};
 use rand::seq::IndexedRandom;
 
-// Random list of fonts to load, will grow based on what I feel
-const FAMILIES: [(Family, Weight); 4] = [
-    (Family::Name("Bricolage Grotesque"), Weight::BOLD),
-    (Family::Name("Fraunces"), Weight::BOLD),
-    (Family::Name("Instrument Serif"), Weight::NORMAL),
-    (Family::Name("Righteous"), Weight::NORMAL)
-];
+use crate::page::landing::buffers::FAMILIES;
 
 pub(super) fn name() -> Buffer {
-    let mut buffer = Buffer::new_empty(Metrics::new(40.0, 48.0));
+    let mut buffer = Buffer::new_empty(Metrics::new(200.0, f32::MIN_POSITIVE));
 
     let (family, weight) = *FAMILIES.choose(&mut rand::rng()).unwrap();
     let attrs = Attrs::new().family(family).weight(weight);

@@ -25,6 +25,6 @@ pub(super) fn center(
 }
 
 // Gets the width of the buffer by finding the line with the maximum width
-fn width(buffer: &Buffer) -> f32 {
+pub(super) fn width(buffer: &Buffer) -> f32 {
     buffer.layout_runs().map(|lr| lr.line_w).max_by(f32::total_cmp).unwrap()
 }

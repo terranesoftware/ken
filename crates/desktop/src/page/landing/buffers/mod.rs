@@ -22,7 +22,15 @@ use recent::recent;
 mod tagline;
 use tagline::tagline;
 
-use glyphon::{Buffer, FontSystem};
+use glyphon::{Buffer, Family, FontSystem, Weight};
+
+// Random list of fonts to load, will grow based on what I feel
+const FAMILIES: [(Family, Weight); 4] = [
+    (Family::Name("Bricolage Grotesque"), Weight::BOLD),
+    (Family::Name("Fraunces"), Weight::BOLD),
+    (Family::Name("Instrument Serif"), Weight::NORMAL),
+    (Family::Name("Righteous"), Weight::NORMAL)
+];
 
 pub(crate) struct Buffers {
     pub(super) name: Buffer,
