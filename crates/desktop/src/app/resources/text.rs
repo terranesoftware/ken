@@ -13,8 +13,11 @@ impl Text {
         
         let database = fs.db_mut();
         database.load_font_data(include_bytes!("../../../fonts/BricolageGrotesque-Bold.ttf").to_vec());
+        database.load_font_data(include_bytes!("../../../fonts/CascadiaCode-Regular.ttf").to_vec());
         database.load_font_data(include_bytes!("../../../fonts/Fraunces_72pt-Bold.ttf").to_vec());
+        database.load_font_data(include_bytes!("../../../fonts/Gelasio-Regular.ttf").to_vec());
         database.load_font_data(include_bytes!("../../../fonts/InstrumentSerif-Regular.ttf").to_vec());
+        database.load_font_data(include_bytes!("../../../fonts/Inter_28pt-SemiBold.ttf").to_vec());
         database.load_font_data(include_bytes!("../../../fonts/Righteous-Regular.ttf").to_vec());
 
         Self {
