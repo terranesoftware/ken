@@ -12,9 +12,16 @@ impl App {
         match we {
             // Placeholder
             WindowEvent::CloseRequested => ael.exit(),
+            WindowEvent::CursorMoved { position, .. } => {
+                if let Some(window) = self.windows.get(&window) && let Window::Ready(page) = window {
+                    page.moved(position);
+                }
+            }
             WindowEvent::RedrawRequested => self.present(window),
-            WindowEvent::Occluded(false) => if let Some(window) = self.windows.get(&window) && let Window::Ready(page) = window {
-                page.window().request_redraw();
+            WindowEvent::Occluded(false) => {
+                if let Some(window) = self.windows.get(&window) && let Window::Ready(page) = window {
+                    page.window().request_redraw();
+                }
             }
             _ => {}
         }
