@@ -34,9 +34,11 @@ impl Page {
 
         let landing = Landing {
             buffers: Arc::new(RwLock::new(Buffers::new())),
+            rects: Arc::new(RwLock::new(Vec::new())),
             resources,
             window
         };
+        landing.prepare().await?;
         landing.render().await?;
         
         Ok(Self::Landing(landing))
@@ -49,6 +51,13 @@ impl Page {
         match self {
             Self::Editor(editor) => editor.moved(position),
             Self::Landing(landing) => landing.moved(position)
+        }
+    }
+
+    pub(crate) async fn render(&self) -> Result<(), Error> {
+        match self {
+            Self::Editor(editor) => editor.render(),
+            Self::Landing(landing) => landing.render().await
         }
     }
     

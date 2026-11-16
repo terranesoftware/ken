@@ -19,43 +19,35 @@ use crate::{Error, page::Landing};
 static LAYOUT: OnceLock<(f32, f32, f32, f32, f32)> = OnceLock::new();
 
 impl Landing {
-    pub(crate) async fn render(&self) -> Result<(), Error> {
-        let carreau = &self.resources.carreau;
-        let gpu = &self.resources.gpu;
-        let text = &self.resources.text;
-        
-        let device = &gpu.device;
-        let queue = &gpu.queue;
-        let ta = &text.ta;
-        let texture = &gpu.texture;
-        let tr = &text.tr;
-        let view = &gpu.view;
-        let viewport = &text.viewport;
+    pub(crate) async fn prepare(&self) -> Result<(), Error> {
+        _ = LAYOUT.set(layout(self.window.inner_size()));
 
-        LAYOUT.set(layout(self.window.inner_size())).unwrap();
-
-        let mc = carreau.clone();
-        let mq = queue.clone();
-        let rects = spawn_blocking(|| rects::prepare(mc, mq));
+        let mc = self.resources.carreau.clone();
+        let mq = self.resources.gpu.queue.clone();
+        let mr = self.rects.clone();
+        let rects = spawn_blocking(|| rects::prepare(mc, mq, mr));
 
         let mb = self.buffers.clone();
-        let mg = gpu.clone();
-        let mt = text.clone();
+        let mg = self.resources.gpu.clone();
+        let mt = self.resources.text.clone();
         let text = spawn_blocking(|| text::prepare(mb, mg, mt));
-        
-        let mut encoder = device.create_command_encoder(&CommandEncoderDescriptor::default());
+
+        rects.await?;
+        text.await?
+    }
+    
+    pub(crate) async fn render(&self) -> Result<(), Error> {
+        let mut encoder = self.resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
 
         {
-            let mut rp = background(&mut encoder, view);
+            let mut rp = background(&mut encoder, &self.resources.gpu.view);
             
-            rects.await?;
-            rects::render(&carreau.read().unwrap(), &mut rp, texture);
+            rects::render(&self.resources.carreau.read().unwrap(), &mut rp, &self.resources.gpu.texture);
 
-            text.await??;
-            text::render(&mut rp, ta, tr, viewport)?;
+            text::render(&mut rp, &self.resources.text.ta, &self.resources.text.tr, &self.resources.text.viewport)?;
         }
         
-        queue.submit([encoder.finish()]);
+        self.resources.gpu.queue.submit([encoder.finish()]);
 
         Ok(())
     }

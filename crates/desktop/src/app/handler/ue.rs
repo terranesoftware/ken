@@ -12,6 +12,19 @@ impl App {
         ue: UserEvent,
     ) -> Result<(), Error> {
         match ue {
+            UserEvent::Render(id, result) => match result {
+                Ok(()) => {
+                    let Window::Ready(page) = self.windows.get(&id).unwrap() else {
+                        unreachable!();
+                    };
+
+                    page.window().request_redraw();
+                },
+                Err(err) => {
+                    eprintln!("{:?}\nExiting...", err);
+                    ael.exit();
+                }
+            }
             UserEvent::Resources(result) => match result {
                 Ok((result, text)) => match result {
                     Ok(gpu) => {
@@ -54,7 +67,7 @@ impl App {
             UserEvent::Window(id, result) => match result {
                 Ok(page) => {
                     let window = page.window();
-                    _ = self.windows.insert(id, Window::Ready(page));
+                    _ = self.windows.insert(id, Window::Ready(Arc::new(page)));
 
                     window.request_redraw();
                 },

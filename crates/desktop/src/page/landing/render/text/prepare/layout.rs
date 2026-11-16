@@ -21,13 +21,13 @@ pub(super) fn layout(
         area(&buffers.name, center(&buffers.name, w), top),
         area(&buffers.tagline, center(&buffers.tagline, w), top + 175.0),
         
-        area(&buffers.ni, left, top + 350.0),
-        area(&buffers.new, left + 75.0, top + 350.0),
-        area(&buffers.nc, right - width(&buffers.nc), top + 350.0),
+        area(&buffers.ni, left + 25.0, top + 350.0),
+        area(&buffers.new, left + 100.0, top + 350.0),
+        area(&buffers.nc, right - width(&buffers.nc) - 25.0, top + 350.0),
         
-        area(&buffers.oi, left, top + 500.0),
-        area(&buffers.open, left + 75.0, top + 500.0),
-        area(&buffers.oc, right - width(&buffers.nc), top + 500.0),
+        area(&buffers.oi, left + 25.0, top + 500.0),
+        area(&buffers.open, left + 100.0, top + 500.0),
+        area(&buffers.oc, right - width(&buffers.nc) - 25.0, top + 500.0),
         
         area(&buffers.recent, left, top + 750.0),
         area(&buffers.re, left, top + 850.0)

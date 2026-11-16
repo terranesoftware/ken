@@ -43,7 +43,7 @@ impl Resources {
         let gpu = spawn_blocking(|| Gpu::complete(md, mq, sc, surface, window));
 
         let md = device.clone();
-        let carreau = spawn_blocking(move || Carreau::new(1, &md, tf));
+        let carreau = spawn_blocking(move || Carreau::new(3, &md, tf));
 
         let fs = text.fs.clone();
         let sc = text.sc.clone();
