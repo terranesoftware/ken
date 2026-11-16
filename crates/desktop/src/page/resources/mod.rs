@@ -1,4 +1,5 @@
 mod gpu;
+use carreau::Carreau;
 pub(super) use gpu::Gpu;
 
 mod text;
@@ -14,6 +15,7 @@ use crate::{Error, app::resources::{Gpu as AppGpu, Text as AppText}};
 
 pub(crate) struct Resources {
     pub(crate) gpu: Arc<Gpu>,
+    pub(crate) rects: Arc<Carreau>,
     pub(crate) text: Arc<Text>
 }
 
@@ -40,15 +42,20 @@ impl Resources {
         let mq = queue.clone();
         let gpu = spawn_blocking(|| Gpu::complete(md, mq, sc, surface, window));
 
+        let md = device.clone();
+        let rects = spawn_blocking(move || Carreau::new(1, &md, tf));
+
         let fs = text.fs.clone();
         let sc = text.sc.clone();
         let text = spawn_blocking(move || Text::complete(cache, fs, device, queue, sc, tf, viewport));
 
         let gpu = Arc::new(gpu.await?);
+        let rects = Arc::new(rects.await?);
         let text = Arc::new(text.await?);
         
         Ok(Self {
             gpu,
+            rects,
             text
         })
     }
