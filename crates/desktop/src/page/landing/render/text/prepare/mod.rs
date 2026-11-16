@@ -9,15 +9,12 @@ use uv::uv;
 
 use std::sync::{Arc, RwLock};
 
-use winit::window::Window;
-
 use crate::{Error, page::{Buffers, resources::{Gpu, Text}}};
 
 pub(crate) fn prepare(
     buffers: Arc<RwLock<Buffers>>,
     gpu: Arc<Gpu>,
     text: Arc<Text>,
-    window: Arc<Window>
 ) -> Result<(), Error> {
     // Shape the buffers
     shape(
@@ -41,7 +38,6 @@ pub(crate) fn prepare(
         &mut text.sc.write().unwrap(),
         &mut text.ta.write().unwrap(),
         &mut text.tr.write().unwrap(),
-        &text.viewport.read().unwrap(),
-        window.inner_size()
+        &text.viewport.read().unwrap()
     )
 }

@@ -2,9 +2,8 @@ use std::sync::Arc;
 
 use glyphon::{FontSystem, SwashCache, TextAtlas, TextRenderer, Viewport};
 use wgpu::{Device, Queue};
-use winit::dpi::PhysicalSize;
 
-use crate::{Error, page::{Buffers, landing::render::text::{area, center, width}}};
+use crate::{Error, page::{Buffers, landing::render::{LAYOUT, text::{area, center, width}}}};
 
 pub(super) fn layout(
     buffers: &Buffers,
@@ -15,16 +14,9 @@ pub(super) fn layout(
     ta: &mut TextAtlas,
     tr: &mut TextRenderer,
     viewport: &Viewport,
-    wd: PhysicalSize<u32>
 ) -> Result<(), Error> {
-    let h = wd.height as f32;
-    let w = wd.width as f32;
+    let (_, left, right, top, w) = *LAYOUT.get().unwrap();
     
-    let cw = w - 2000.0;
-    let left = (w - cw) / 2.0;
-    let right = cw + left;
-    
-    let top = (h - 1000.0) / 2.0;
     tr.prepare(device, queue, fs, ta, viewport, [
         area(&buffers.name, center(&buffers.name, w), top),
         area(&buffers.tagline, center(&buffers.tagline, w), top + 175.0),

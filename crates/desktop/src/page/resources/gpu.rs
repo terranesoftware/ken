@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use wgpu::{Device, Extent3d, Queue, Surface, SurfaceConfiguration, SurfaceTargetUnsafe, Texture, TextureDescriptor, TextureDimension, TextureUsages, TextureView, TextureViewDescriptor};
+use wgpu::{Device, Extent3d, Queue, Surface, SurfaceConfiguration, Texture, TextureDescriptor, TextureDimension, TextureUsages, TextureView, TextureViewDescriptor};
 use winit::window::Window;
 
 use crate::{Error, app::resources::Gpu as AppGpu};

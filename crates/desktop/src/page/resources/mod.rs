@@ -1,12 +1,12 @@
 mod gpu;
-use carreau::Carreau;
 pub(super) use gpu::Gpu;
 
 mod text;
 pub(super) use text::Text;
 
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
+use carreau::Carreau;
 use tokio::task::spawn_blocking;
 use wgpu::Surface;
 use winit::window::Window;
@@ -14,8 +14,8 @@ use winit::window::Window;
 use crate::{Error, app::resources::{Gpu as AppGpu, Text as AppText}};
 
 pub(crate) struct Resources {
+    pub(crate) carreau: Arc<RwLock<Carreau>>,
     pub(crate) gpu: Arc<Gpu>,
-    pub(crate) rects: Arc<Carreau>,
     pub(crate) text: Arc<Text>
 }
 
@@ -43,19 +43,19 @@ impl Resources {
         let gpu = spawn_blocking(|| Gpu::complete(md, mq, sc, surface, window));
 
         let md = device.clone();
-        let rects = spawn_blocking(move || Carreau::new(1, &md, tf));
+        let carreau = spawn_blocking(move || Carreau::new(1, &md, tf));
 
         let fs = text.fs.clone();
         let sc = text.sc.clone();
         let text = spawn_blocking(move || Text::complete(cache, fs, device, queue, sc, tf, viewport));
 
+        let carreau = Arc::new(RwLock::new(carreau.await?));
         let gpu = Arc::new(gpu.await?);
-        let rects = Arc::new(rects.await?);
         let text = Arc::new(text.await?);
         
         Ok(Self {
+            carreau,
             gpu,
-            rects,
             text
         })
     }

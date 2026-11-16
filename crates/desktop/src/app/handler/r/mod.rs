@@ -3,7 +3,6 @@ mod window;
 use std::sync::Arc;
 
 use tokio::spawn;
-use wgpu::{SurfaceTarget, rwh::{HasDisplayHandle, HasWindowHandle}};
 use winit::event_loop::ActiveEventLoop;
 
 use crate::{App, Error, Page, UserEvent, app::Window};

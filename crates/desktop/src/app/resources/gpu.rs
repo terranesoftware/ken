@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use wgpu::{Adapter, Backends, Device, DeviceDescriptor, Instance, InstanceDescriptor, Queue, RequestAdapterOptions};
+use wgpu::{Adapter, Backends, Device, DeviceDescriptor, Features, Instance, InstanceDescriptor, Limits, Queue, RequestAdapterOptions};
 
 use crate::Error;
 
@@ -32,7 +32,14 @@ impl Gpu {
             instance.request_adapter(&RequestAdapterOptions::default()).await?
         };
 
-        let (device, queue) = adapter.request_device(&DeviceDescriptor::default()).await?;
+        let (device, queue) = adapter.request_device(&DeviceDescriptor {
+            required_features: Features::IMMEDIATES,
+            required_limits: Limits {
+                max_immediate_size: 8,
+                ..Default::default()
+            },
+            ..Default::default()
+        }).await?;
         
         Ok(Self {
             adapter,
