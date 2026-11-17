@@ -10,9 +10,9 @@ pub(super) fn background<'encoder>(
                 depth_slice: None,
                 ops: Operations {
                     load: LoadOp::Clear(Color {
-                        r: 248.0 / 255.0,
-                        g: 244.0 / 255.0,
-                        b: 233.0 / 255.0,
+                        r: 242.0 / 255.0,
+                        g: 234.0 / 255.0,
+                        b: 216.0 / 255.0,
                         a: 1.0
                     }),
                     store: StoreOp::Store
