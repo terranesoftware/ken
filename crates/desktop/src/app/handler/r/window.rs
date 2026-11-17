@@ -1,3 +1,6 @@
+#[cfg(target_os = "macos")]
+use winit::platform::macos::WindowAttributesExtMacOS;
+
 use winit::{dpi::PhysicalPosition, event_loop::ActiveEventLoop, window::Window};
 
 use crate::App;
@@ -7,8 +10,16 @@ impl App {
         &mut self,
         ael: &ActiveEventLoop
     ) -> Window {
-        // Add .with_decorations(false) when I create custom window decorations
-        let window = ael.create_window(Window::default_attributes().with_title("ken")).unwrap();
+        let attributes = Window::default_attributes()
+            .with_title("ken");
+        
+        #[cfg(target_os = "macos")]
+        let attributes = attributes
+            .with_fullsize_content_view(true)
+            .with_title_hidden(true)
+            .with_titlebar_transparent(true);
+        
+        let window = ael.create_window(attributes).unwrap();
         
         // Center the window
         if let Some(monitor) = window.current_monitor() {
