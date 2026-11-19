@@ -7,15 +7,16 @@ mod present;
 
 use std::{collections::HashMap, sync::Arc};
 
-use winit::{event_loop::EventLoopProxy, window::WindowId};
+use winit::{dpi::PhysicalPosition, event_loop::EventLoopProxy, window::WindowId};
 
-use crate::{Page, Resources, UserEvent};
+use crate::{Resources, Screen, UserEvent};
 
 pub(super) struct App {
     // cache: Cache,
     elp: Arc<EventLoopProxy<UserEvent>>,
+    position: PhysicalPosition<f64>,
     resources: Resources,
-    windows: HashMap<WindowId, Arc<Page>>
+    screens: HashMap<WindowId, Screen>
 }
 
 impl App {
@@ -27,8 +28,9 @@ impl App {
             // cache: Cache::new(),
             // Wrap it in an Arc because on some platforms, cloning it is expensive
             elp: Arc::new(elp),
+            position: PhysicalPosition::default(),
             resources,
-            windows: HashMap::new()
+            screens: HashMap::new()
         }
     }
 }

@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use winit::event_loop::ActiveEventLoop;
 
 use crate::{App, Error, UserEvent};
@@ -13,19 +11,19 @@ impl App {
         match ue {
             UserEvent::Render(id, result) => match result {
                 Ok(()) => {
-                    let page = self.windows.get(&id).unwrap();
+                    let screen = self.screens.get(&id).unwrap();
 
-                    page.window().request_redraw();
+                    screen.window.request_redraw();
                 },
                 Err(err) => {
                     eprintln!("{:?}\nExiting...", err);
                     ael.exit();
                 }
             }
-            UserEvent::Window(id, result) => match result {
-                Ok(page) => {
-                    let window = page.window();
-                    _ = self.windows.insert(id, Arc::new(page));
+            UserEvent::Screen(id, result) => match result {
+                Ok(screen) => {
+                    let window = screen.window.clone();
+                    _ = self.screens.insert(id, screen);
 
                     window.request_redraw();
                 },

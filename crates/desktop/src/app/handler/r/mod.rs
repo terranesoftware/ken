@@ -5,7 +5,7 @@ use std::sync::Arc;
 use tokio::spawn;
 use winit::event_loop::ActiveEventLoop;
 
-use crate::{App, Error, Page, UserEvent};
+use crate::{App, Error, Screen, UserEvent};
 
 impl App {
     pub(super) fn r(
@@ -26,9 +26,9 @@ impl App {
         
         spawn(async move {
             let id = window.id();
-            let result = Page::landing(gpu, surface, text, window).await;
+            let result = Screen::new(gpu, surface, text, window).await;
             
-            _ = elp.send_event(UserEvent::Window(id, result));
+            _ = elp.send_event(UserEvent::Screen(id, result));
         });
 
         Ok(())

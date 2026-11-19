@@ -8,15 +8,15 @@ impl App {
         &mut self,
         window: WindowId
     ) {
-        let Some(page) = self.windows.get(&window) else {
+        let Some(screen) = self.screens.get(&window) else {
             return;
         };
         
         let (device, queue, sc, surface, texture) = {
-            let resources = page.resources();
-            let gpu = &resources.gpu;
+            let gpu = &screen.resources.gpu;
+            let (surface, sc) = &screen.surface;
             
-            (&gpu.device, &gpu.queue, &gpu.sc, &gpu.surface, &gpu.texture)
+            (&gpu.device, &gpu.queue, sc, surface, screen.resources.tv.texture())
         };
         
         // Get the current frame

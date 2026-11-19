@@ -7,11 +7,11 @@ use error::Error;
 mod event;
 use event::UserEvent;
 
-mod page;
-use page::Page;
-
 mod resources;
 use resources::Resources;
+
+mod screen;
+use screen::Screen;
 
 use tokio::main;
 use winit::event_loop::EventLoop;

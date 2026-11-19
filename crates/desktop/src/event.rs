@@ -1,8 +1,8 @@
 use winit::window::WindowId;
 
-use crate::{Error, Page};
+use crate::{Error, Screen};
 
 pub(super) enum UserEvent {
     Render(WindowId, Result<(), Error>),
-    Window(WindowId, Result<Page, Error>)
+    Screen(WindowId, Result<Screen, Error>)
 }
