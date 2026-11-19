@@ -23,12 +23,10 @@ impl App {
         elp: EventLoopProxy<UserEvent>,
         resources: Resources
     ) -> Self {
-        // Wrap it in an Arc because on some platforms, cloning it is expensive
-        let elp = Arc::new(elp);
-        
         Self {
             // cache: Cache::new(),
-            elp,
+            // Wrap it in an Arc because on some platforms, cloning it is expensive
+            elp: Arc::new(elp),
             resources,
             windows: HashMap::new()
         }
