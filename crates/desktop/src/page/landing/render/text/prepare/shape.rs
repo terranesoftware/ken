@@ -1,6 +1,6 @@
 use glyphon::FontSystem;
 
-use crate::page::Buffers;
+use crate::page::landing::Buffers;
 
 pub(super) fn shape(
     buffers: &mut Buffers,

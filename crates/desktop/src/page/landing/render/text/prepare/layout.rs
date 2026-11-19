@@ -3,7 +3,7 @@ use std::sync::Arc;
 use glyphon::{FontSystem, SwashCache, TextAtlas, TextRenderer, Viewport};
 use wgpu::{Device, Queue};
 
-use crate::{Error, page::{Buffers, landing::render::{LAYOUT, text::{area, center, width}}}};
+use crate::{Error, page::landing::{Buffers, render::{LAYOUT, text::{area, center, width}}}};
 
 pub(super) fn layout(
     buffers: &Buffers,

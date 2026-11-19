@@ -36,7 +36,7 @@ impl Landing {
         text.await?
     }
     
-    pub(crate) async fn render(&self) -> Result<(), Error> {
+    pub(crate) fn render(&self) -> Result<(), Error> {
         let mut encoder = self.resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
 
         {

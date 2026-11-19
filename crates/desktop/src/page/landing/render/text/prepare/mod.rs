@@ -9,7 +9,7 @@ use uv::uv;
 
 use std::sync::{Arc, RwLock};
 
-use crate::{Error, page::{Buffers, resources::{Gpu, Text}}};
+use crate::{Error, page::{landing::Buffers, resources::{Gpu, Text}}};
 
 pub(crate) fn prepare(
     buffers: Arc<RwLock<Buffers>>,

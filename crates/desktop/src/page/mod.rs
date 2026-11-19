@@ -7,12 +7,11 @@ pub(super) use landing::Landing;
 mod resources;
 use resources::Resources;
 
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
-use wgpu::Surface;
 use winit::{dpi::PhysicalPosition, window::Window};
 
-use crate::{Error, resources::{Gpu, Text}, page::landing::Buffers};
+use crate::Error;
 
 pub(super) enum Page {
     Editor(Editor),
@@ -20,30 +19,6 @@ pub(super) enum Page {
 }
 
 impl Page {
-    pub(crate) fn editor() {
-        todo!();
-    }
-    
-    pub(crate) async fn landing(
-        gpu: Arc<Gpu>,
-        surface: Surface<'static>,
-        text: Arc<Text>,
-        window: Arc<Window>
-    ) -> Result<Self, Error> {
-        let resources = Resources::new(gpu, surface, text, window.clone()).await?;
-
-        let landing = Landing {
-            buffers: Arc::new(RwLock::new(Buffers::new())),
-            rects: Arc::new(RwLock::new(Vec::new())),
-            resources,
-            window
-        };
-        landing.prepare().await?;
-        landing.render().await?;
-        
-        Ok(Self::Landing(landing))
-    }
-
     pub(crate) fn moved(
         &self,
         position: PhysicalPosition<f64>
@@ -57,7 +32,7 @@ impl Page {
     pub(crate) async fn render(&self) -> Result<(), Error> {
         match self {
             Self::Editor(editor) => editor.render(),
-            Self::Landing(landing) => landing.render().await
+            Self::Landing(landing) => landing.render()
         }
     }
     

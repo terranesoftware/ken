@@ -6,15 +6,38 @@ mod render;
 use std::sync::{Arc, RwLock};
 
 use carreau::Rect;
+use wgpu::Surface;
 use winit::{dpi::PhysicalPosition, window::Window};
 
-use crate::page::resources::Resources;
+use crate::{Error, Page, page::resources::Resources, resources::{Gpu, Text}};
 
 pub(crate) struct Landing {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
     pub(crate) rects: Arc<RwLock<Vec<Rect>>>,
     pub(crate) resources: Resources,
     pub(crate) window: Arc<Window>
+}
+
+impl Page {
+    pub(crate) async fn landing(
+        gpu: Arc<Gpu>,
+        surface: Surface<'static>,
+        text: Arc<Text>,
+        window: Arc<Window>
+    ) -> Result<Self, Error> {
+        let resources = Resources::new(gpu, surface, text, window.clone()).await?;
+        
+        let landing = Landing {
+            buffers: Arc::new(RwLock::new(Buffers::new())),
+            rects: Arc::new(RwLock::new(Vec::new())),
+            resources,
+            window
+        };
+        landing.prepare().await?;
+        landing.render()?;
+        
+        Ok(Self::Landing(landing))
+    }
 }
 
 impl Landing {
