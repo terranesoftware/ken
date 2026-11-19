@@ -16,27 +16,14 @@ pub(super) struct Resources {
 }
 
 impl Resources {
-    pub(super) fn new(
-        gpu: Gpu,
-        text: Text
-    ) -> Self {
-        Self {
-            gpu: Arc::new(gpu),
-            text: Arc::new(text)
-        }
-    }
-    
-    pub(super) async fn init() -> Result<(
-        Result<Gpu, Error>,
-        Text
-    ), Error> {
+    pub(super) async fn new() -> Result<Self, Error> {
         let gpu = spawn(Gpu::new(None));
         
         let text = spawn_blocking(Text::new);
-
-        let gpu = gpu.await?;
-        let text = text.await?;
         
-        Ok((gpu, text))
+        Ok(Self {
+            gpu: Arc::new(gpu.await??),
+            text: Arc::new(text.await?)
+        })
     }
 }

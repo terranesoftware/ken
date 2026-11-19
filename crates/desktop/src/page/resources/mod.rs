@@ -11,7 +11,7 @@ use tokio::task::spawn_blocking;
 use wgpu::Surface;
 use winit::window::Window;
 
-use crate::{Error, app::resources::{Gpu as AppGpu, Text as AppText}};
+use crate::{Error, resources::{Gpu as AppGpu, Text as AppText}};
 
 pub(crate) struct Resources {
     pub(crate) carreau: Arc<RwLock<Carreau>>,

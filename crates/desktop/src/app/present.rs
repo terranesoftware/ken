@@ -1,22 +1,22 @@
 use wgpu::{CommandEncoderDescriptor, CurrentSurfaceTexture, Extent3d, Origin3d, TexelCopyTextureInfo, TextureAspect};
 use winit::window::WindowId;
 
-use crate::{App, app::window::Window};
+use crate::App;
 
 impl App {
     pub(super) fn present(
         &mut self,
         window: WindowId
     ) {
-        let window = self.windows.get(&window).unwrap();
-        let (device, queue, sc, surface, texture) = match window {
-            Window::Pending(_) => return,
-            Window::Ready(page) => {
-                let resources = page.resources();
-                let gpu = &resources.gpu;
-
-                (&gpu.device, &gpu.queue, &gpu.sc, &gpu.surface, &gpu.texture)
-            }
+        let Some(page) = self.windows.get(&window) else {
+            return;
+        };
+        
+        let (device, queue, sc, surface, texture) = {
+            let resources = page.resources();
+            let gpu = &resources.gpu;
+            
+            (&gpu.device, &gpu.queue, &gpu.sc, &gpu.surface, &gpu.texture)
         };
         
         // Get the current frame

@@ -12,7 +12,7 @@ use std::sync::{Arc, RwLock};
 use wgpu::Surface;
 use winit::{dpi::PhysicalPosition, window::Window};
 
-use crate::{Error, app::resources::{Gpu, Text}, page::landing::Buffers};
+use crate::{Error, resources::{Gpu, Text}, page::landing::Buffers};
 
 pub(super) enum Page {
     Editor(Editor),

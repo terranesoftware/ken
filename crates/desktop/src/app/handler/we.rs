@@ -1,7 +1,7 @@
 use tokio::spawn;
 use winit::{event::WindowEvent, event_loop::ActiveEventLoop, window::WindowId};
 
-use crate::{App, UserEvent, app::window::Window};
+use crate::{App, UserEvent};
 
 impl App {
     pub(super) fn we(
@@ -14,7 +14,7 @@ impl App {
             // Placeholder
             WindowEvent::CloseRequested => ael.exit(),
             WindowEvent::CursorMoved { position, .. } => {
-                if let Some(window) = self.windows.get(&wid) && let Window::Ready(page) = window {
+                if let Some(page) = self.windows.get(&wid) {
                     page.moved(position);
 
                     let melp = self.elp.clone();
@@ -28,7 +28,7 @@ impl App {
             }
             WindowEvent::RedrawRequested => self.present(wid),
             WindowEvent::Occluded(false) => {
-                if let Some(window) = self.windows.get(&wid) && let Window::Ready(page) = window {
+                if let Some(page) = self.windows.get(&wid) {
                     page.window().request_redraw();
                 }
             }
