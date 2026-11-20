@@ -5,10 +5,11 @@ mod init;
 use init::init;
 
 mod page;
-pub(super) use page::{Destination, Page};
+pub(super) use page::{Destination, Page, PageMethods};
 
 mod resources;
-use resources::{Gpu, Resources, Text};
+use resources::{Gpu, Text};
+pub(super) use resources::Resources;
 
 use std::sync::{Arc, RwLock};
 

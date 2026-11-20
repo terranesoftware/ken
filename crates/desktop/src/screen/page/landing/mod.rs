@@ -1,5 +1,6 @@
 mod buffers;
 pub(super) use buffers::Buffers;
+use wgpu::CommandEncoderDescriptor;
 
 mod render;
 
@@ -8,7 +9,7 @@ use std::sync::{Arc, RwLock};
 use carreau::Rect;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
-use crate::{Error, screen::{Page, Resources, page::Destination}};
+use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, landing::render::{background, rects, text}}}};
 
 pub(crate) struct Landing {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
@@ -31,8 +32,8 @@ impl Page {
     }
 }
 
-impl Landing {
-    pub(super) fn clicked(
+impl PageMethods for Landing {
+    fn clicked(
         &self,
         position: PhysicalPosition<f64>
     ) -> Option<Destination> {
@@ -52,7 +53,7 @@ impl Landing {
         None
     }
     
-    pub(super) fn moved(
+    fn moved(
         &self,
         position: PhysicalPosition<f64>,
         resources: &Resources
@@ -74,5 +75,24 @@ impl Landing {
         }
 
         resources.carreau.write().unwrap().prepare(&resources.gpu.queue, &rects);
+    }
+
+    fn render(
+        &self,
+        resources: &Arc<Resources>
+    ) -> Result<(), Error> {
+        let mut encoder = resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
+        
+        {
+            let mut rp = background(&mut encoder, &resources.tv);
+            
+            rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
+            
+            text::render(&mut rp, &resources.text.ta, &resources.text.tr, &resources.text.viewport)?;
+        }
+        
+        resources.gpu.queue.submit([encoder.finish()]);
+        
+        Ok(())
     }
 }

@@ -1,6 +1,6 @@
 use wgpu::{Color, CommandEncoder, LoadOp, Operations, RenderPass, RenderPassColorAttachment, RenderPassDescriptor, StoreOp, TextureView};
 
-pub(super) fn background<'encoder>(
+pub(crate) fn background<'encoder>(
     encoder: &'encoder mut CommandEncoder,
     view: &TextureView
 ) -> RenderPass<'encoder> {

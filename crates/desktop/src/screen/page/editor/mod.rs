@@ -8,7 +8,7 @@ use std::sync::{Arc, RwLock};
 use carreau::Rect;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
-use crate::{Error, screen::{Page, Resources, page::Destination}};
+use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods}}};
 
 pub(crate) struct Editor {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
@@ -31,19 +31,26 @@ impl Page {
     }
 }
 
-impl Editor {
-    pub(super) fn clicked(
+impl PageMethods for Editor {
+    fn clicked(
         &self,
         position: PhysicalPosition<f64>
     ) -> Option<Destination> {
         None
     }
     
-    pub(super) fn moved(
+    fn moved(
         &self,
         position: PhysicalPosition<f64>,
         resources: &Resources
     ) {
         
+    }
+
+    fn render(
+        &self,
+        resources: &Arc<Resources>
+    ) -> Result<(), Error> {
+        Ok(())
     }
 }

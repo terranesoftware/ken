@@ -2,7 +2,7 @@ mod prepare;
 pub(super) use prepare::prepare;
 
 mod render;
-pub(super) use render::render;
+pub(crate) use render::render;
 
 mod utils;
 use utils::{area, center, width};

@@ -28,17 +28,6 @@ impl App {
                     ael.exit();
                 }
             }
-            EventKind::Render(result) => match result {
-                Ok(()) => {
-                    let screen = self.screens.get(&wid).unwrap();
-
-                    screen.window.request_redraw();
-                },
-                Err(err) => {
-                    eprintln!("{:?}\nExiting...", err);
-                    ael.exit();
-                }
-            }
             EventKind::Screen(result) => match result {
                 Ok(screen) => {
                     let window = screen.window.clone();

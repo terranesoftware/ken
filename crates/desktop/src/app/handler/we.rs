@@ -1,7 +1,7 @@
 use tokio::spawn;
 use winit::{event::{ElementState, MouseButton, WindowEvent}, event_loop::ActiveEventLoop, window::WindowId};
 
-use crate::{App, UserEvent, event::EventKind, screen::{Destination, Page}};
+use crate::{App, UserEvent, event::EventKind, screen::{Destination, Page, PageMethods}};
 
 impl App {
     pub(super) fn we(
@@ -18,17 +18,12 @@ impl App {
                     screen.page.moved(position, &screen.resources);
                     self.position = position;
 
-                    let melp = self.elp.clone();
-                    let mp = screen.page.clone();
-                    let mr = screen.resources.clone();
-                    spawn(async move {
-                        let result = mp.render(&mr).await;
-
-                        _ = melp.send_event(UserEvent {
-                            ek: EventKind::Render(result),
-                            wid
-                        });
-                    });
+                    if let Err(err) = screen.page.render(&screen.resources) {
+                        eprintln!("{:?}\nExiting...", err);
+                        ael.exit();
+                    }
+                    
+                    screen.window.request_redraw();
                 }
             }
             WindowEvent::MouseInput { button, state, .. } => {
