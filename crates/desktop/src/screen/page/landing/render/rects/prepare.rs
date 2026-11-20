@@ -2,34 +2,35 @@ use std::sync::{Arc, RwLock};
 
 use carreau::{Rect, rect::Border};
 
-use crate::screen::{Resources, page::landing::render::LAYOUT};
+use crate::screen::{Resources, page::landing::Layout};
 
 pub(crate) fn prepare(
+    layout: Layout,
     rects: Arc<RwLock<Vec<Rect>>>,
     resources: Arc<Resources>
 ) {
-    let (cw, left, _, top, _) = *LAYOUT.get().unwrap();
-
+    let Layout { cw, left, s, top, .. } = layout;
+    
     let nb = Rect {
         backdrop: [232.0 / 255.0, 216.0 / 255.0, 193.0 / 255.0, 0.0],
         border: Border::new(
             [0.0; 4],
-            cw / 64.0,
+            11.375 * s,
             0.0
         ),
-        position: [left, top + 275.0],
-        size: [cw, 150.0]
+        position: [left * s, (top + 137.5) * s],
+        size: [cw * s, 75.0 * s]
     };
 
     let ob = Rect {
         backdrop: [232.0 / 255.0, 216.0 / 255.0, 193.0 / 255.0, 0.0],
         border: Border::new(
             [0.0; 4],
-            cw / 64.0,
+            11.375 * s,
             0.0
         ), 
-        position: [left, top + 425.0],
-        size: [cw, 150.0]
+        position: [left * s, (top + 212.5) * s],
+        size: [cw * s, 75.0 * s]
     };
 
     let separator = Rect {
@@ -39,8 +40,8 @@ pub(crate) fn prepare(
             0.0,
             0.0
         ),
-        position: [left, top + 625.0],
-        size: [cw, 5.0]
+        position: [left * s, (top + 312.5) * s],
+        size: [cw * s, 2.5 * s]
     };
 
     rects.write().unwrap().extend([

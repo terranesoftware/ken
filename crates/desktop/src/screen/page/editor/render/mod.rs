@@ -3,7 +3,6 @@ mod background;
 use background::background;
 
 mod layout;
-use layout::layout;
 
 mod rects;
 
@@ -11,7 +10,6 @@ mod text;
 
 use std::sync::{Arc, OnceLock};
 
-use tokio::task::spawn_blocking;
 use wgpu::CommandEncoderDescriptor;
 use winit::dpi::PhysicalSize;
 

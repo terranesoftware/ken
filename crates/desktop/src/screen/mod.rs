@@ -25,7 +25,8 @@ pub(super) struct Screen {
     pub(super) page: Arc<Page>,
     pub(super) resources: Arc<Resources>,
     pub(super) surface: (Surface<'static>, SurfaceConfiguration),
-    pub(super) window: Arc<Window>
+    pub(super) window: Arc<Window>,
+    pub(super) zoom: f64
 }
 
 impl Screen {
@@ -70,14 +71,15 @@ impl Screen {
             tv
         });
 
-        let page = Arc::new(Page::landing(&resources, window.inner_size()).await?);
+        let page = Arc::new(Page::landing(&resources, window.scale_factor() as f32, window.inner_size()).await?);
 
         Ok(Self {
             locked: false,
             page,
             resources,
             surface,
-            window
+            window,
+            zoom: 1.0
         })
     }
 }

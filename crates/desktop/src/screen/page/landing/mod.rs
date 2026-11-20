@@ -1,12 +1,15 @@
 mod buffers;
 pub(super) use buffers::Buffers;
-use wgpu::CommandEncoderDescriptor;
+
+mod layout;
+use layout::Layout;
 
 mod render;
 
 use std::sync::{Arc, RwLock};
 
 use carreau::Rect;
+use wgpu::CommandEncoderDescriptor;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
 use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, landing::render::{background, rects, text}}}};
@@ -19,13 +22,15 @@ pub(crate) struct Landing {
 impl Page {
     pub(crate) async fn landing(
         resources: &Arc<Resources>,
+        scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
         let landing = Landing {
             buffers: Arc::new(RwLock::new(Buffers::new())),
             rects: Arc::new(RwLock::new(Vec::new()))
         };
-        landing.prepare(resources, size).await?;
+        
+        landing.prepare(Layout::new(scale, size), resources).await?;
         landing.render(resources)?;
         
         Ok(Self::Landing(landing))

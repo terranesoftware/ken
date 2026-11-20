@@ -4,7 +4,7 @@ use rand::seq::IndexedRandom;
 use crate::screen::page::landing::buffers::FAMILIES;
 
 pub(super) fn name() -> Buffer {
-    let mut buffer = Buffer::new_empty(Metrics::new(200.0, f32::MIN_POSITIVE));
+    let mut buffer = Buffer::new_empty(Metrics::new(100.0, f32::MIN_POSITIVE));
 
     let (family, weight) = *FAMILIES.choose(&mut rand::rng()).unwrap();
     let attrs = Attrs::new().family(family).weight(weight);
