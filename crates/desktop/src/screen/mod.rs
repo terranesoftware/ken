@@ -5,7 +5,7 @@ mod init;
 use init::init;
 
 mod page;
-use page::Page;
+pub(super) use page::{Destination, Page};
 
 mod resources;
 use resources::{Gpu, Resources, Text};
@@ -20,6 +20,7 @@ use winit::window::Window;
 use crate::{Error, resources::{Gpu as AppGpu, Text as AppText}};
 
 pub(super) struct Screen {
+    pub(super) locked: bool,
     pub(super) page: Arc<Page>,
     pub(super) resources: Arc<Resources>,
     pub(super) surface: (Surface<'static>, SurfaceConfiguration),
@@ -71,6 +72,7 @@ impl Screen {
         let page = Arc::new(Page::landing(&resources, window.inner_size()).await?);
 
         Ok(Self {
+            locked: false,
             page,
             resources,
             surface,

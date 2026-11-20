@@ -1,6 +1,5 @@
 mod buffers;
 pub(super) use buffers::Buffers;
-use wgpu::Surface;
 
 mod render;
 
@@ -9,7 +8,7 @@ use std::sync::{Arc, RwLock};
 use carreau::Rect;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
-use crate::{Error, screen::{Page, Resources}};
+use crate::{Error, screen::{Page, Resources, page::Destination}};
 
 pub(crate) struct Editor {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
@@ -36,8 +35,8 @@ impl Editor {
     pub(super) fn clicked(
         &self,
         position: PhysicalPosition<f64>
-    ) -> Option<Surface<'static>> {
-        todo!()
+    ) -> Option<Destination> {
+        None
     }
     
     pub(super) fn moved(
@@ -45,6 +44,6 @@ impl Editor {
         position: PhysicalPosition<f64>,
         resources: &Resources
     ) {
-        todo!()
+        
     }
 }

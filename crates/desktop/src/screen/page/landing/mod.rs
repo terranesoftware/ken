@@ -6,10 +6,9 @@ mod render;
 use std::sync::{Arc, RwLock};
 
 use carreau::Rect;
-use wgpu::Surface;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
-use crate::{Error, screen::{Page, Resources}};
+use crate::{Error, screen::{Page, Resources, page::Destination}};
 
 pub(crate) struct Landing {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
@@ -36,7 +35,7 @@ impl Landing {
     pub(super) fn clicked(
         &self,
         position: PhysicalPosition<f64>
-    ) -> Option<Surface<'static>> {
+    ) -> Option<Destination> {
         let point = [position.x as f32, position.y as f32];
         let rects = self.rects.read().unwrap();
 
@@ -46,7 +45,7 @@ impl Landing {
             }
 
             if rect.hit(point) {
-                todo!()
+                return Some(Destination::Editor);
             }
         }
 
