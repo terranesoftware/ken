@@ -20,7 +20,7 @@ impl Gpu {
         });
         #[cfg(target_os = "windows")]
         let instance = Instance::new(InstanceDescriptor {
-            backends: Backends::GL,
+            backends: Backends::VULKAN,
             ..InstanceDescriptor::new_without_display_handle()
         });
 
