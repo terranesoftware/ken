@@ -19,7 +19,7 @@ pub(crate) fn prepare(
             0.0,
             0.0
         ),
-        position: [310.0 * s, 109.0 * s],
+        position: [310.0 * s, 65.0 * s],
         size: [(w - 310.0) * s, 2.0 * s]
     };
 
@@ -30,8 +30,8 @@ pub(crate) fn prepare(
             0.0,
             0.0
         ),
-        position: [308.0 * s, 44.0 * s],
-        size: [2.0 * s, (h - 75.0) * s]
+        position: [308.0 * s, 0.0],
+        size: [2.0 * s, h * s]
     };
 
     // Doc line numbers
@@ -42,8 +42,8 @@ pub(crate) fn prepare(
             0.0,
             0.0
         ),
-        position: [371.0 * s, 111.0 * s],
-        size: [2.0 * s, (h - 142.0) * s]
+        position: [371.0 * s, 67.0 * s],
+        size: [2.0 * s, (h - 67.0) * s]
     };
 
     // Filesystem heading
@@ -54,7 +54,7 @@ pub(crate) fn prepare(
             0.0,
             0.0
         ),
-        position: [0.0, 109.0 * s],
+        position: [0.0, 65.0 * s],
         size: [308.0 * s, 2.0 * s]
     };
 
@@ -66,80 +66,16 @@ pub(crate) fn prepare(
             0.0,
             0.0
         ),
-        position: [38.0 * s, 111.0 * s],
-        size: [2.0 * s, (h - 142.0) * s]
+        position: [38.0 * s, 67.0 * s],
+        size: [2.0 * s, (h - 67.0) * s]
     };
-
-    let mode = Rect {
-        backdrop: [183.0 / 255.0, 60.0 / 255.0, 50.0 / 255.0, 1.0],
-        border: Border::new(
-            [0.0; 4],
-            0.0,
-            0.0
-        ),
-        position: [0.0, (h - 29.0) * s],
-        size: [50.0 * s, 29.0 * s]
-    };
-
-    let status = Rect {
-        backdrop: [235.0 / 255.0, 228.0 / 255.0, 215.0 / 255.0, 1.0],
-        border: Border::new(
-            [0.0; 4],
-            0.0,
-            0.0
-        ),
-        position: [0.0, (h - 29.0) * s],
-        size: [w * s, 29.0 * s]
-    };
-
-    // Status border
-    let sb = Rect {
-        backdrop: [215.0 / 255.0, 205.0 / 255.0, 188.0 / 255.0, 1.0],
-        border: Border::new(
-            [0.0; 4],
-            0.0,
-            0.0
-        ),
-        position: [0.0, (h - 31.0) * s],
-        size: [w * s, 2.0 * s]
-    };
-
-    let title = Rect {
-        backdrop: [231.0 / 255.0, 223.0 / 255.0, 208.0 / 255.0, 1.0],
-        border: Border::new(
-            [0.0; 4],
-            0.0,
-            0.0
-        ),
-        position: [0.0, 0.0],
-        size: [w * s, 42.0 * s]
-    };
-
-    // Title border
-    let tb = Rect {
-        backdrop: [215.0 / 255.0, 205.0 / 255.0, 188.0 / 255.0, 1.0],
-        border: Border::new(
-            [0.0; 4],
-            0.0,
-            0.0
-        ),
-        position: [0.0, 42.0 * s],
-        size: [w * s, 2.0 * s]
-    };
-
-    
 
     rects.write().unwrap().extend([
-        title,
-        tb,
-        status,
-        sb,
         divider,
         fh,
         dh,
         fln,
-        dln,
-        mode
+        dln
     ]);
     
     let rects = rects.read().unwrap();

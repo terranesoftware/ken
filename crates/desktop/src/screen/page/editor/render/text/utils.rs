@@ -4,16 +4,17 @@ use glyphon::{Buffer, Color, TextArea, TextBounds};
 pub(super) fn area<'a>(
     buffer: &'a Buffer,
     left: f32,
-    top: f32
+    top: f32,
+    s: f32
 ) -> TextArea<'a> {
     TextArea {
         bounds: TextBounds::default(),
         buffer,
         custom_glyphs: &[],
         default_color: Color::rgb(41, 40, 35),
-        left,
-        scale: 1.0,
-        top
+        left: left * s,
+        scale: s,
+        top: top * s
     }
 }
 

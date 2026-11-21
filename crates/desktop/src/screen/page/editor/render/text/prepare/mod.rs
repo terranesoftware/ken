@@ -1,5 +1,4 @@
 mod layout;
-use layout::layout;
 
 mod shape;
 use shape::shape;
@@ -9,10 +8,11 @@ use uv::uv;
 
 use std::sync::{Arc, RwLock};
 
-use crate::{Error, screen::{Resources, page::editor::Buffers}};
+use crate::{Error, screen::{Resources, page::editor::{Buffers, Layout}}};
 
 pub(crate) fn prepare(
     buffers: Arc<RwLock<Buffers>>,
+    layout: Layout,
     resources: Arc<Resources>
 ) -> Result<(), Error> {
     let gpu = &resources.gpu;
@@ -32,10 +32,11 @@ pub(crate) fn prepare(
     );
     
     // Create the layout of the text
-    layout(
+    layout::layout(
         &buffers.read().unwrap(),
         &gpu.device,
         &mut text.fs.write().unwrap(),
+        layout,
         &gpu.queue,
         &mut text.sc.write().unwrap(),
         &mut text.ta.write().unwrap(),
