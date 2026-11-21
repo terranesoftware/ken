@@ -12,7 +12,7 @@ use carreau::Rect;
 use wgpu::CommandEncoderDescriptor;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
-use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, background, landing::render::{rects, text}}}};
+use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, landing::render::{rects, text}}}};
 
 pub(crate) struct Landing {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
@@ -21,17 +21,18 @@ pub(crate) struct Landing {
 
 impl Page {
     pub(crate) async fn landing(
+        palette: &Palette,
         resources: &Arc<Resources>,
         scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
         let landing = Arc::new(Landing {
-            buffers: Arc::new(RwLock::new(Buffers::new(&resources.palette))),
+            buffers: Arc::new(RwLock::new(Buffers::new(palette))),
             rects: Arc::new(RwLock::new(Vec::new()))
         });
 
-        landing.prepare(Layout::new(scale, size), resources).await?;
-        landing.render(resources)?;
+        landing.prepare(Layout::new(scale, size), *palette, resources).await?;
+        landing.render(palette, resources)?;
         
         Ok(Self::Landing(landing))
     }
@@ -84,12 +85,13 @@ impl PageMethods for Arc<Landing> {
 
     fn render(
         &self,
+        palette: &Palette,
         resources: &Arc<Resources>
     ) -> Result<(), Error> {
         let mut encoder = resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
         
         {
-            let mut rp = background(&mut encoder, &resources.tv, resources.palette.paper);
+            let mut rp = background(&mut encoder, &resources.tv, palette.paper);
             
             rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
             

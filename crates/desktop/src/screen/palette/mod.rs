@@ -3,6 +3,7 @@ pub(super) use rgb::Rgb;
 
 pub(crate) mod themes;
 
+#[derive(Clone, Copy)]
 pub(crate) struct Palette {
     pub(crate) accent: Rgb,
     pub(crate) border: Rgb,

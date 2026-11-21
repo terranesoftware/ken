@@ -3,14 +3,14 @@ mod window;
 use std::sync::Arc;
 
 use tokio::spawn;
-use winit::event_loop::ActiveEventLoop;
+use winit::{event_loop::ActiveEventLoop, window::Theme};
 
 use crate::{App, Error, Screen, UserEvent, event::EventKind};
 
 impl App {
     pub(super) fn r(
         &mut self,
-        ael: &ActiveEventLoop
+        ael: &ActiveEventLoop,
     ) -> Result<(), Error> {
         // Create the window
         let window = self.window(ael);
@@ -25,8 +25,9 @@ impl App {
         let surface = instance.create_surface(window.clone())?;
         
         spawn(async move {
+            let theme = window.theme().unwrap_or(Theme::Light);
             let wid = window.id();
-            let result = Screen::new(gpu, surface, text, window).await;
+            let result = Screen::new(gpu, surface, text, theme, window).await;
             
             _ = elp.send_event(UserEvent {
                 ek: EventKind::Screen(result),

@@ -8,6 +8,10 @@ mod page;
 pub(super) use page::{Destination, Page};
 pub(super) use page::{editor, landing, PageMethods};
 
+mod palette;
+use palette::Palette;
+pub(super) use palette::themes;
+
 mod resources;
 use resources::{Gpu, Text};
 pub(super) use resources::Resources;
@@ -17,14 +21,15 @@ use std::sync::{Arc, RwLock};
 use carreau::Carreau;
 use tokio::task::spawn_blocking;
 use wgpu::{Surface, SurfaceConfiguration};
-use winit::window::Window;
+use winit::window::{Theme, Window};
 
-use crate::screen::page::themes::LIGHT;
+use crate::screen::themes::{DARK, LIGHT};
 use crate::{Error, resources::{Gpu as AppGpu, Text as AppText}};
 
 pub(super) struct Screen {
     pub(super) locked: bool,
     pub(super) page: Arc<Page>,
+    pub(super) palette: Palette,
     pub(super) resources: Arc<Resources>,
     pub(super) surface: (Surface<'static>, SurfaceConfiguration),
     pub(super) window: Arc<Window>,
@@ -36,6 +41,7 @@ impl Screen {
         gpu: Arc<AppGpu>,
         surface: Surface<'static>,
         text: Arc<AppText>,
+        theme: Theme,
         window: Arc<Window>
     ) -> Result<Self, Error> {
         let mg = gpu.clone();
@@ -69,16 +75,20 @@ impl Screen {
                 device: gpu.device.clone(),
                 queue: gpu.queue.clone()
             },
-            palette: LIGHT,
             text: text.await?,
             tv
         });
 
-        let page = Arc::new(Page::landing(&resources, window.scale_factor() as f32, window.inner_size()).await?);
+        let palette = match theme {
+            Theme::Dark => DARK,
+            Theme::Light => LIGHT
+        };
+        let page = Arc::new(Page::landing(&palette, &resources, window.scale_factor() as f32, window.inner_size()).await?);
 
         Ok(Self {
             locked: false,
             page,
+            palette,
             resources,
             surface,
             window,

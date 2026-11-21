@@ -44,7 +44,7 @@ impl App {
                 Ok(()) => {
                     let screen = self.screens.get(&wid).unwrap();
 
-                    if let Err(err) = screen.page.render(&screen.resources) {
+                    if let Err(err) = screen.page.render(&screen.palette, &screen.resources) {
                         eprintln!("{:?}\nExiting...", err);
                         ael.exit();
                     }

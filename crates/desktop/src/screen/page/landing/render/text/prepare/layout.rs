@@ -10,7 +10,7 @@ pub(super) fn layout(
     device: &Arc<Device>,
     fs: &mut FontSystem,
     layout: Layout,
-    palette: &Palette,
+    palette: Palette,
     queue: &Arc<Queue>,
     swc: &mut SwashCache,
     ta: &mut TextAtlas,

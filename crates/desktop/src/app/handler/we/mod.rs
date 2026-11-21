@@ -1,10 +1,10 @@
-mod zoom;
-use zoom::zoom;
+mod update;
+use update::update;
 
 use tokio::spawn;
-use winit::{event::{ElementState, MouseButton, WindowEvent}, event_loop::ActiveEventLoop, keyboard::Key, window::WindowId};
+use winit::{event::{ElementState, MouseButton, WindowEvent}, event_loop::ActiveEventLoop, keyboard::Key, window::{Theme, WindowId}};
 
-use crate::{App, UserEvent, event::EventKind, screen::{Destination, Page, PageMethods}};
+use crate::{App, UserEvent, event::EventKind, screen::{Destination, Page, PageMethods, themes::{DARK, LIGHT}}};
 
 impl App {
     pub(super) fn we(
@@ -22,7 +22,7 @@ impl App {
                 if let Some(screen) = self.screens.get(&wid) && !screen.locked {
                     screen.page.moved(position, &screen.resources);
 
-                    if let Err(err) = screen.page.render(&screen.resources) {
+                    if let Err(err) = screen.page.render(&screen.palette, &screen.resources) {
                         eprintln!("{:?}\nExiting...", err);
                         ael.exit();
                     }
@@ -40,7 +40,7 @@ impl App {
                                 screen.zoom += 0.1;
                                 
                                 let elp = self.elp.clone();
-                                zoom(elp, screen, wid);
+                                update(elp, screen, wid);
                             }
                         }
                         // Zoom out
@@ -49,7 +49,7 @@ impl App {
                                 screen.zoom -= 0.1;
                                 
                                 let elp = self.elp.clone();
-                                zoom(elp, screen, wid);
+                                update(elp, screen, wid);
                             }
                         }
                         _ => ()
@@ -70,10 +70,11 @@ impl App {
                                 Destination::Editor => {
                                     let melp = self.elp.clone();
                                     let mr = screen.resources.clone();
+                                    let palette = screen.palette;
                                     let scale = (screen.window.scale_factor() * screen.zoom) as f32;
                                     let size = screen.window.inner_size();
                                     spawn(async move {
-                                        let result = Page::editor(&mr, scale, size).await;
+                                        let result = Page::editor(&palette, &mr, scale, size).await;
 
                                         _ = melp.send_event(UserEvent {
                                             ek: EventKind::Navigate(result),
@@ -87,10 +88,20 @@ impl App {
                     }
                 }
             }
-            WindowEvent::RedrawRequested => self.present(wid),
             WindowEvent::Occluded(false) => {
                 if let Some(screen) = self.screens.get(&wid) {
                     screen.window.request_redraw();
+                }
+            }
+            WindowEvent::RedrawRequested => self.present(wid),
+            WindowEvent::ThemeChanged(theme) => {
+                if let Some(screen) = self.screens.get_mut(&wid) {
+                    screen.palette = match theme {
+                        Theme::Dark => DARK,
+                        Theme::Light => LIGHT
+                    };
+
+                    update(self.elp.clone(), screen, wid);
                 }
             }
             _ => {}

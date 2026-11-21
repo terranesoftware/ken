@@ -12,7 +12,7 @@ use carreau::Rect;
 use wgpu::CommandEncoderDescriptor;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
-use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, background, editor::render::{rects, text}}}};
+use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, editor::render::{rects, text}}}};
 
 pub(crate) struct Editor {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
@@ -21,16 +21,17 @@ pub(crate) struct Editor {
 
 impl Page {
     pub(crate) async fn editor(
+        palette: &Palette,
         resources: &Arc<Resources>,
         scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
         let editor = Arc::new(Editor {
-            buffers: Arc::new(RwLock::new(Buffers::new(&resources.palette))),
+            buffers: Arc::new(RwLock::new(Buffers::new(palette))),
             rects: Arc::new(RwLock::new(Vec::new()))
         });
-        editor.prepare(Layout::new(scale, size), resources).await?;
-        editor.render(resources)?;
+        editor.prepare(Layout::new(scale, size), *palette, resources).await?;
+        editor.render(palette, resources)?;
         
         Ok(Self::Editor(editor))
     }
@@ -54,12 +55,13 @@ impl PageMethods for Arc<Editor> {
 
     fn render(
         &self,
+        palette: &Palette,
         resources: &Arc<Resources>
     ) -> Result<(), Error> {
         let mut encoder = resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
         
         {
-            let mut rp = background(&mut encoder, &resources.tv, resources.palette.paper);
+            let mut rp = background(&mut encoder, &resources.tv, palette.paper);
             
             rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
             

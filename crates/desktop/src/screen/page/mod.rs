@@ -11,15 +11,12 @@ pub(super) use editor::Editor;
 pub(crate) mod landing;
 pub(super) use landing::Landing;
 
-mod palette;
-pub(crate) use {palette::Palette, palette::themes};
-
 use std::sync::Arc;
 
 use enum_dispatch::enum_dispatch;
 use winit::dpi::PhysicalPosition;
 
-use crate::{Error, screen::Resources};
+use crate::{Error, screen::{Resources, palette::Palette}};
 
 #[enum_dispatch(PageMethods)]
 pub(crate) enum Page {
@@ -42,6 +39,7 @@ pub(crate) trait PageMethods {
 
     fn render(
         &self,
+        palette: &Palette,
         resources: &Arc<Resources>
     ) -> Result<(), Error>;
 }

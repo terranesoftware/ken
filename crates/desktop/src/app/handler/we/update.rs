@@ -5,11 +5,12 @@ use winit::{event_loop::EventLoopProxy, window::WindowId};
 
 use crate::{Screen, UserEvent, event::EventKind, screen::{Page, editor, landing}};
 
-pub(super) fn zoom(
+pub(super) fn update(
     elp: Arc<EventLoopProxy<UserEvent>>,
     screen: &mut Screen,
     wid: WindowId
 ) {
+    let palette = screen.palette;
     let s = (screen.zoom * screen.window.scale_factor()) as f32;
     let size = screen.window.inner_size();
 
@@ -19,7 +20,7 @@ pub(super) fn zoom(
             let editor = editor.clone();
             
             _ = spawn(async move {
-                let result = editor.prepare(editor::Layout::new(s, size), &mr).await;
+                let result = editor.prepare(editor::Layout::new(s, size), palette, &mr).await;
                 
                 _ = elp.send_event(UserEvent {
                     ek: EventKind::Update(result),
@@ -31,7 +32,7 @@ pub(super) fn zoom(
             let landing = landing.clone();
             
             _ = spawn(async move {
-                let result = landing.prepare(landing::Layout::new(s, size), &mr).await;
+                let result = landing.prepare(landing::Layout::new(s, size), palette, &mr).await;
                 
                 _ = elp.send_event(UserEvent {
                     ek: EventKind::Update(result),

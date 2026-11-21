@@ -2,15 +2,15 @@ use std::sync::{Arc, RwLock};
 
 use carreau::{Rect, rect::Border};
 
-use crate::screen::{Resources, page::landing::Layout};
+use crate::screen::{Resources, page::{Palette, landing::Layout}};
 
 pub(crate) fn prepare(
     layout: Layout,
+    palette: Palette,
     rects: Arc<RwLock<Vec<Rect>>>,
     resources: Arc<Resources>
 ) {
     let Layout { cw, left, s, top, .. } = layout;
-    let palette = &resources.palette;
 
     // Hover backdrops start transparent; `moved` shows them
     let [r, g, b, _] = palette.hover.rect();

@@ -1,6 +1,6 @@
 use wgpu::{Color, CommandEncoder, LoadOp, Operations, RenderPass, RenderPassColorAttachment, RenderPassDescriptor, StoreOp, TextureView};
 
-use crate::screen::page::palette::Rgb;
+use crate::screen::palette::Rgb;
 
 fn convert(channel: f64) -> f64 {
     if channel <= 0.04045 {
