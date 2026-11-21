@@ -1,6 +1,9 @@
 mod buffers;
 pub(super) use buffers::Buffers;
 
+mod layout;
+use layout::Layout;
+
 mod render;
 
 use std::sync::{Arc, RwLock};
@@ -18,13 +21,14 @@ pub(crate) struct Editor {
 impl Page {
     pub(crate) async fn editor(
         resources: &Arc<Resources>,
+        scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
         let editor = Editor {
             buffers: Arc::new(RwLock::new(Buffers::new())),
             rects: Arc::new(RwLock::new(Vec::new()))
         };
-        editor.prepare(resources, size).await?;
+        editor.prepare(Layout::new(scale, size), resources).await?;
         editor.render(resources)?;
         
         Ok(Self::Editor(editor))

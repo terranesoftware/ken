@@ -51,7 +51,7 @@ impl Screen {
         let complete = spawn_blocking(|| complete(md, suc, surface, mw));
 
         let md = gpu.device.clone();
-        let carreau = spawn_blocking(move || Carreau::new(3, &md, tf));
+        let carreau = spawn_blocking(move || Carreau::new(10, &md, tf));
 
         let fs = text.fs.clone();
         let swc = text.sc.clone();

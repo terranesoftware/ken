@@ -1,40 +1,23 @@
-mod background;
-
-use background::background;
-
-mod layout;
-
 mod rects;
 
-mod text;
+// mod text;
 
-use std::sync::{Arc, OnceLock};
+use std::sync::Arc;
 
+use tokio::task::spawn_blocking;
 use wgpu::CommandEncoderDescriptor;
-use winit::dpi::PhysicalSize;
 
-use crate::{Error, screen::{Resources, page::Editor}};
-
-static LAYOUT: OnceLock<(f32, f32, f32, f32, f32)> = OnceLock::new();
+use crate::{Error, screen::{Resources, page::{Editor, background, editor::Layout}}};
 
 impl Editor {
-    pub(crate) async fn prepare(
+    pub(super) async fn prepare(
         &self,
-        resources: &Arc<Resources>,
-        size: PhysicalSize<u32>
+        layout: Layout,
+        resources: &Arc<Resources>
     ) -> Result<(), Error> {
-        /* _ = LAYOUT.set(layout(size));
-
         let mrec = self.rects.clone();
         let mres = resources.clone();
-        let rects = spawn_blocking(|| rects::prepare(mrec, mres));
-
-        let mb = self.buffers.clone();
-        let mres = resources.clone();
-        let text = spawn_blocking(|| text::prepare(mb, mres));
-
-        rects.await?;
-        text.await? */
+        spawn_blocking(move || rects::prepare(layout, mrec, mres)).await?;
 
         Ok(())
     }
@@ -48,7 +31,7 @@ impl Editor {
         {
             let mut rp = background(&mut encoder, &resources.tv);
             
-            // rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
+            rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
 
             // text::render(&mut rp, &resources.text.ta, &resources.text.tr, &resources.text.viewport)?;
         }

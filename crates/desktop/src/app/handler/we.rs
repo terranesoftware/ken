@@ -39,9 +39,10 @@ impl App {
                                 Destination::Editor => {
                                     let melp = self.elp.clone();
                                     let mr = screen.resources.clone();
+                                    let scale = screen.window.scale_factor() as f32;
                                     let size = screen.window.inner_size();
                                     spawn(async move {
-                                        let result = Page::editor(&mr, size).await;
+                                        let result = Page::editor(&mr, scale, size).await;
 
                                         _ = melp.send_event(UserEvent {
                                             ek: EventKind::Navigate(result),

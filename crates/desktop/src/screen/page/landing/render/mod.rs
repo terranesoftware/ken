@@ -1,6 +1,3 @@
-mod background;
-pub(super) use background::background;
-
 pub(super) mod rects;
 
 pub(super) mod text;

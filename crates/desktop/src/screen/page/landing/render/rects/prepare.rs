@@ -12,7 +12,7 @@ pub(crate) fn prepare(
     let Layout { cw, left, s, top, .. } = layout;
     
     let nb = Rect {
-        backdrop: [232.0 / 255.0, 216.0 / 255.0, 193.0 / 255.0, 0.0],
+        backdrop: [240.0 / 255.0, 230.0 / 255.0, 216.0 / 255.0, 0.0],
         border: Border::new(
             [0.0; 4],
             11.375 * s,
@@ -23,7 +23,7 @@ pub(crate) fn prepare(
     };
 
     let ob = Rect {
-        backdrop: [232.0 / 255.0, 216.0 / 255.0, 193.0 / 255.0, 0.0],
+        backdrop: [240.0 / 255.0, 230.0 / 255.0, 216.0 / 255.0, 0.0],
         border: Border::new(
             [0.0; 4],
             11.375 * s,

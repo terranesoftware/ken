@@ -12,7 +12,7 @@ use carreau::Rect;
 use wgpu::CommandEncoderDescriptor;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
-use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, landing::render::{background, rects, text}}}};
+use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, background, landing::render::{rects, text}}}};
 
 pub(crate) struct Landing {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
