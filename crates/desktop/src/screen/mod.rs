@@ -5,7 +5,8 @@ mod init;
 use init::init;
 
 mod page;
-pub(super) use page::{Destination, Page, PageMethods};
+pub(super) use page::{Destination, Page};
+pub(super) use page::{editor, landing, PageMethods};
 
 mod resources;
 use resources::{Gpu, Text};
@@ -18,6 +19,7 @@ use tokio::task::spawn_blocking;
 use wgpu::{Surface, SurfaceConfiguration};
 use winit::window::Window;
 
+use crate::screen::page::themes::LIGHT;
 use crate::{Error, resources::{Gpu as AppGpu, Text as AppText}};
 
 pub(super) struct Screen {
@@ -67,6 +69,7 @@ impl Screen {
                 device: gpu.device.clone(),
                 queue: gpu.queue.clone()
             },
+            palette: LIGHT,
             text: text.await?,
             tv
         });

@@ -1,5 +1,8 @@
+mod zoom;
+use zoom::zoom;
+
 use tokio::spawn;
-use winit::{event::{ElementState, MouseButton, WindowEvent}, event_loop::ActiveEventLoop, window::WindowId};
+use winit::{event::{ElementState, MouseButton, WindowEvent}, event_loop::ActiveEventLoop, keyboard::Key, window::WindowId};
 
 use crate::{App, UserEvent, event::EventKind, screen::{Destination, Page, PageMethods}};
 
@@ -26,6 +29,33 @@ impl App {
                     screen.window.request_redraw();
                 }
             }
+            WindowEvent::KeyboardInput { event, .. } => {
+                // Zoom
+                if event.state.is_pressed() && self.ms.control_key() {
+                    match event.logical_key.as_ref() {
+                        // Zoom in
+                        Key::Character("=") => if let Some(screen) = self.screens.get_mut(&wid) {
+                            if screen.zoom < 4.0 {
+                                screen.zoom += 0.1;
+                                
+                                let elp = self.elp.clone();
+                                zoom(elp, screen, wid);
+                            }
+                        }
+                        // Zoom out
+                        Key::Character("-") => if let Some(screen) = self.screens.get_mut(&wid) {
+                            if screen.zoom > 0.3 {
+                                screen.zoom -= 0.1;
+                                
+                                let elp = self.elp.clone();
+                                zoom(elp, screen, wid);
+                            }
+                        }
+                        _ => ()
+                    }
+                }
+            }
+            WindowEvent::ModifiersChanged(modifiers) => self.ms = modifiers.state(),
             WindowEvent::MouseInput { button, state, .. } => {
                 if matches!(
                     (button, state),

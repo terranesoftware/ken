@@ -37,6 +37,7 @@ pub(crate) fn prepare(
         &gpu.device,
         &mut text.fs.write().unwrap(),
         layout,
+        &resources.palette,
         &gpu.queue,
         &mut text.sc.write().unwrap(),
         &mut text.ta.write().unwrap(),

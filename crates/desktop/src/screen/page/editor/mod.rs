@@ -2,16 +2,17 @@ mod buffers;
 pub(super) use buffers::Buffers;
 
 mod layout;
-use layout::Layout;
+pub(crate) use layout::Layout;
 
 mod render;
 
 use std::sync::{Arc, RwLock};
 
 use carreau::Rect;
+use wgpu::CommandEncoderDescriptor;
 use winit::dpi::{PhysicalPosition, PhysicalSize};
 
-use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods}}};
+use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, background, editor::render::{rects, text}}}};
 
 pub(crate) struct Editor {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
@@ -24,10 +25,10 @@ impl Page {
         scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
-        let editor = Editor {
-            buffers: Arc::new(RwLock::new(Buffers::new())),
+        let editor = Arc::new(Editor {
+            buffers: Arc::new(RwLock::new(Buffers::new(&resources.palette))),
             rects: Arc::new(RwLock::new(Vec::new()))
-        };
+        });
         editor.prepare(Layout::new(scale, size), resources).await?;
         editor.render(resources)?;
         
@@ -35,7 +36,7 @@ impl Page {
     }
 }
 
-impl PageMethods for Editor {
+impl PageMethods for Arc<Editor> {
     fn clicked(
         &self,
         position: PhysicalPosition<f64>
@@ -55,6 +56,18 @@ impl PageMethods for Editor {
         &self,
         resources: &Arc<Resources>
     ) -> Result<(), Error> {
+        let mut encoder = resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
+        
+        {
+            let mut rp = background(&mut encoder, &resources.tv, resources.palette.paper);
+            
+            rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
+            
+            text::render(&mut rp, &resources.text.ta, &resources.text.tr, &resources.text.viewport)?;
+        }
+        
+        resources.gpu.queue.submit([encoder.finish()]);
+        
         Ok(())
     }
 }

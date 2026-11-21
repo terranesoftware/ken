@@ -9,7 +9,7 @@ use tokio::task::spawn_blocking;
 use crate::{Error, screen::{Resources, page::{Landing, landing::Layout}}};
 
 impl Landing {
-    pub(super) async fn prepare(
+    pub(crate) async fn prepare(
         &self,
         layout: Layout,
         resources: &Arc<Resources>,

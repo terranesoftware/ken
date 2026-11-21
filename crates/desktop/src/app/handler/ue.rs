@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use winit::event_loop::ActiveEventLoop;
 
-use crate::{App, Error, UserEvent, event::EventKind};
+use crate::{App, Error, UserEvent, event::EventKind, screen::PageMethods};
 
 impl App {
     pub(super) fn ue(
@@ -35,6 +35,21 @@ impl App {
 
                     window.request_redraw();
                 },
+                Err(err) => {
+                    eprintln!("{:?}\nExiting...", err);
+                    ael.exit();
+                }
+            }
+            EventKind::Update(result) => match result {
+                Ok(()) => {
+                    let screen = self.screens.get(&wid).unwrap();
+
+                    if let Err(err) = screen.page.render(&screen.resources) {
+                        eprintln!("{:?}\nExiting...", err);
+                        ael.exit();
+                    }
+                    screen.window.request_redraw();
+                }
                 Err(err) => {
                     eprintln!("{:?}\nExiting...", err);
                     ael.exit();

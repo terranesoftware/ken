@@ -30,6 +30,8 @@ use tagline::tagline;
 
 use glyphon::{Buffer, Family, FontSystem, Weight};
 
+use crate::screen::page::Palette;
+
 // Random list of fonts to load, will grow based on what I feel
 const FAMILIES: [(Family, Weight); 4] = [
     (Family::Name("Bricolage Grotesque"), Weight::BOLD),
@@ -52,14 +54,14 @@ pub(crate) struct Buffers {
 }
 
 impl Buffers {
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new(palette: &Palette) -> Self {
         Self {
-            name: name(),
+            name: name(palette),
             nc: nc(),
             new: new(),
-            ni: ni(),
+            ni: ni(palette),
             oc: oc(),
-            oi: oi(),
+            oi: oi(palette),
             open: open(),
             re: re(),
             recent: recent(),

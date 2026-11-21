@@ -10,9 +10,14 @@ pub(crate) fn prepare(
     resources: Arc<Resources>
 ) {
     let Layout { cw, left, s, top, .. } = layout;
+    let palette = &resources.palette;
+
+    // Hover backdrops start transparent; `moved` shows them
+    let [r, g, b, _] = palette.hover.rect();
+    let hover = [r, g, b, 0.0];
     
     let nb = Rect {
-        backdrop: [240.0 / 255.0, 230.0 / 255.0, 216.0 / 255.0, 0.0],
+        backdrop: hover,
         border: Border::new(
             [0.0; 4],
             11.375 * s,
@@ -23,7 +28,7 @@ pub(crate) fn prepare(
     };
 
     let ob = Rect {
-        backdrop: [240.0 / 255.0, 230.0 / 255.0, 216.0 / 255.0, 0.0],
+        backdrop: hover,
         border: Border::new(
             [0.0; 4],
             11.375 * s,
@@ -34,7 +39,7 @@ pub(crate) fn prepare(
     };
 
     let separator = Rect {
-        backdrop: [215.0 / 255.0, 205.0 / 255.0, 188.0 / 255.0, 1.0],
+        backdrop: palette.border.rect(),
         border: Border::new(
             [0.0; 4],
             0.0,
@@ -44,11 +49,11 @@ pub(crate) fn prepare(
         size: [cw * s, 2.5 * s]
     };
 
-    rects.write().unwrap().extend([
+    *rects.write().unwrap() = vec![
         nb,
         ob,
         separator
-    ]);
+    ];
     
     let rects = rects.read().unwrap();
     resources.carreau.write().unwrap().prepare(&resources.gpu.queue, &rects);

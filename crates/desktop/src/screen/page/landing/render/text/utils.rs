@@ -1,17 +1,17 @@
 use glyphon::{Buffer, Color, TextArea, TextBounds};
 
-// Creates a TextArea with defaults; `left`/`top` are logical, scaled to physical by `s`
 pub(super) fn area<'a>(
     buffer: &'a Buffer,
     left: f32,
     top: f32,
-    s: f32
+    s: f32,
+    ink: Color
 ) -> TextArea<'a> {
     TextArea {
         bounds: TextBounds::default(),
         buffer,
         custom_glyphs: &[],
-        default_color: Color::rgb(41, 40, 35),
+        default_color: ink,
         left: left * s,
         scale: s,
         top: top * s

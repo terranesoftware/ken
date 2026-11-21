@@ -2,7 +2,7 @@ mod buffers;
 pub(super) use buffers::Buffers;
 
 mod layout;
-use layout::Layout;
+pub(crate) use layout::Layout;
 
 mod render;
 
@@ -25,11 +25,11 @@ impl Page {
         scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
-        let landing = Landing {
-            buffers: Arc::new(RwLock::new(Buffers::new())),
+        let landing = Arc::new(Landing {
+            buffers: Arc::new(RwLock::new(Buffers::new(&resources.palette))),
             rects: Arc::new(RwLock::new(Vec::new()))
-        };
-        
+        });
+
         landing.prepare(Layout::new(scale, size), resources).await?;
         landing.render(resources)?;
         
@@ -37,7 +37,7 @@ impl Page {
     }
 }
 
-impl PageMethods for Landing {
+impl PageMethods for Arc<Landing> {
     fn clicked(
         &self,
         position: PhysicalPosition<f64>
@@ -89,7 +89,7 @@ impl PageMethods for Landing {
         let mut encoder = resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
         
         {
-            let mut rp = background(&mut encoder, &resources.tv);
+            let mut rp = background(&mut encoder, &resources.tv, resources.palette.paper);
             
             rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
             
