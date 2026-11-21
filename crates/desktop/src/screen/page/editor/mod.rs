@@ -10,7 +10,7 @@ use std::sync::{Arc, RwLock};
 
 use carreau::Rect;
 use wgpu::CommandEncoderDescriptor;
-use winit::dpi::{PhysicalPosition, PhysicalSize};
+use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::CursorIcon};
 
 use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, editor::render::{rects, text}}}};
 
@@ -49,8 +49,8 @@ impl PageMethods for Arc<Editor> {
         &self,
         position: PhysicalPosition<f64>,
         resources: &Resources
-    ) {
-        
+    ) -> CursorIcon {
+        CursorIcon::Default
     }
 
     fn render(

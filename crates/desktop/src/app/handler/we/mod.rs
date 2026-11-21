@@ -20,7 +20,7 @@ impl App {
                 self.position = position;
                 
                 if let Some(screen) = self.screens.get(&wid) && !screen.locked {
-                    screen.page.moved(position, &screen.resources);
+                    screen.window.set_cursor(screen.page.moved(position, &screen.resources));
 
                     if let Err(err) = screen.page.render(&screen.palette, &screen.resources) {
                         eprintln!("{:?}\nExiting...", err);

@@ -10,7 +10,7 @@ use std::sync::{Arc, RwLock};
 
 use carreau::Rect;
 use wgpu::CommandEncoderDescriptor;
-use winit::dpi::{PhysicalPosition, PhysicalSize};
+use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::CursorIcon};
 
 use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, landing::render::{rects, text}}}};
 
@@ -63,7 +63,7 @@ impl PageMethods for Arc<Landing> {
         &self,
         position: PhysicalPosition<f64>,
         resources: &Resources
-    ) {
+    ) -> CursorIcon {
         let point = [position.x as f32, position.y as f32];
         let mut rects = self.rects.write().unwrap();
 
@@ -81,6 +81,8 @@ impl PageMethods for Arc<Landing> {
         }
 
         resources.carreau.write().unwrap().prepare(&resources.gpu.queue, &rects);
+
+        CursorIcon::Default
     }
 
     fn render(

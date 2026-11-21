@@ -14,7 +14,7 @@ pub(super) use landing::Landing;
 use std::sync::Arc;
 
 use enum_dispatch::enum_dispatch;
-use winit::dpi::PhysicalPosition;
+use winit::{dpi::PhysicalPosition, window::CursorIcon};
 
 use crate::{Error, screen::{Resources, palette::Palette}};
 
@@ -35,7 +35,7 @@ pub(crate) trait PageMethods {
         &self,
         position: PhysicalPosition<f64>,
         resources: &Resources
-    );
+    ) -> CursorIcon;
 
     fn render(
         &self,
