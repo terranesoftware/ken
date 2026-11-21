@@ -17,9 +17,10 @@ impl App {
             // Placeholder
             WindowEvent::CloseRequested => ael.exit(),
             WindowEvent::CursorMoved { position, .. } => {
-                if let Some(screen) = self.screens.get(&wid) {
+                self.position = position;
+                
+                if let Some(screen) = self.screens.get(&wid) && !screen.locked {
                     screen.page.moved(position, &screen.resources);
-                    self.position = position;
 
                     if let Err(err) = screen.page.render(&screen.resources) {
                         eprintln!("{:?}\nExiting...", err);
