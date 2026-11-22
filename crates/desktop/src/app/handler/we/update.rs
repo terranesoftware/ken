@@ -20,7 +20,8 @@ pub(super) fn update(
             let editor = editor.clone();
             
             _ = spawn(async move {
-                let result = editor.prepare(editor::Layout::new(s, size), palette, &mr).await;
+                let fw = *editor.fw.read().unwrap();
+                let result = editor.prepare(editor::Layout::new(fw, s, size), palette, &mr).await;
                 
                 _ = elp.send_event(UserEvent {
                     ek: EventKind::Update(result),

@@ -12,6 +12,7 @@ use crate::{Error, screen::{Resources, page::{Palette, editor::{Buffers, Layout}
 
 pub(crate) fn prepare(
     buffers: Arc<RwLock<Buffers>>,
+    focused: bool,
     layout: Layout,
     palette: Palette,
     resources: Arc<Resources>
@@ -36,6 +37,7 @@ pub(crate) fn prepare(
     layout::layout(
         &buffers.read().unwrap(),
         &gpu.device,
+        focused,
         &mut text.fs.write().unwrap(),
         layout,
         palette,

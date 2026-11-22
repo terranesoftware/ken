@@ -2,11 +2,12 @@ mod buffers;
 pub(super) use buffers::Buffers;
 
 mod layout;
+use ken::Ken;
 pub(crate) use layout::Layout;
 
 mod render;
 
-use std::sync::{Arc, RwLock};
+use std::{path::PathBuf, sync::{Arc, RwLock}};
 
 use carreau::Rect;
 use wgpu::CommandEncoderDescriptor;
@@ -16,21 +17,40 @@ use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Pa
 
 pub(crate) struct Editor {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
+    pub(crate) focused: bool,
+    pub(crate) fw: RwLock<f32>, // Filesystem width
+    pub(crate) ken: Arc<RwLock<Ken>>,
     pub(crate) rects: Arc<RwLock<Vec<Rect>>>
 }
 
 impl Page {
     pub(crate) async fn editor(
+        ken: Arc<RwLock<Ken>>,
         palette: &Palette,
+        path: Option<PathBuf>,
         resources: &Arc<Resources>,
         scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
         let editor = Arc::new(Editor {
             buffers: Arc::new(RwLock::new(Buffers::new(palette))),
+            focused: if let Some(path) = path {
+                let mut ken = ken.write().unwrap();
+                ken.active = path.clone();
+                ken.directories.insert(path)?;
+                
+                false
+            }
+            else {
+                true
+            },
+            fw: RwLock::new(308.0),
+            ken,
             rects: Arc::new(RwLock::new(Vec::new()))
         });
-        editor.prepare(Layout::new(scale, size), *palette, resources).await?;
+        
+        editor.prepare(Layout::new(308.0, scale, size), *palette, resources).await?;
+        
         editor.render(palette, resources)?;
         
         Ok(Self::Editor(editor))

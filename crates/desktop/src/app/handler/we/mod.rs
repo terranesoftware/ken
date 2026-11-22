@@ -69,12 +69,13 @@ impl App {
                             match destination {
                                 Destination::Editor(path) => {
                                     let melp = self.elp.clone();
+                                    let mk = self.ken.clone();
                                     let mr = screen.resources.clone();
                                     let palette = screen.palette;
                                     let scale = (screen.window.scale_factor() * screen.zoom) as f32;
                                     let size = screen.window.inner_size();
                                     spawn(async move {
-                                        let result = Page::editor(&palette, &mr, scale, size).await;
+                                        let result = Page::editor(mk, &palette, path, &mr, scale, size).await;
 
                                         _ = melp.send_event(UserEvent {
                                             ek: EventKind::Navigate(result),

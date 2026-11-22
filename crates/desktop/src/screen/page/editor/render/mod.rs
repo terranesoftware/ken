@@ -15,13 +15,15 @@ impl Editor {
         palette: Palette,
         resources: &Arc<Resources>
     ) -> Result<(), Error> {
+        let focused = self.focused;
+
         let mrec = self.rects.clone();
         let mres = resources.clone();
-        let rects = spawn_blocking(move || rects::prepare(layout, palette, mrec, mres));
+        let rects = spawn_blocking(move || rects::prepare(focused, layout, palette, mrec, mres));
 
         let mb = self.buffers.clone();
         let mres = resources.clone();
-        let text = spawn_blocking(move || text::prepare(mb, layout, palette, mres));
+        let text = spawn_blocking(move || text::prepare(mb, focused, layout, palette, mres));
 
         rects.await?;
         text.await?

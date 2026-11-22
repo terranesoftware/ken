@@ -5,7 +5,7 @@ mod handler;
 
 mod present;
 
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, sync::{Arc, RwLock}};
 
 use ken::Ken;
 use winit::{dpi::PhysicalPosition, event_loop::EventLoopProxy, keyboard::ModifiersState, window::WindowId};
@@ -15,7 +15,7 @@ use crate::{Error, Resources, Screen, UserEvent};
 pub(super) struct App {
     // cache: Cache,
     elp: Arc<EventLoopProxy<UserEvent>>,
-    ken: Ken,
+    ken: Arc<RwLock<Ken>>,
     ms: ModifiersState,
     position: PhysicalPosition<f64>,
     resources: Resources,
@@ -28,7 +28,7 @@ impl App {
             // cache: Cache::new(),
             // Wrap it in an Arc because on some platforms, cloning it is expensive
             elp: Arc::new(elp),
-            ken: Ken::new(),
+            ken: Arc::new(RwLock::new(Ken::new())),
             ms: ModifiersState::default(),
             position: PhysicalPosition::default(),
             resources: Resources::new().await?,
