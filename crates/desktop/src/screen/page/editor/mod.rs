@@ -32,18 +32,20 @@ impl Page {
         scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
+        let focused = if let Some(path) = path {
+            let mut ken = ken.write().unwrap();
+            ken.active = path.clone();
+            ken.directories.insert(path)?;
+            
+            false
+        }
+        else {
+            true
+        };
+        
         let editor = Arc::new(Editor {
-            buffers: Arc::new(RwLock::new(Buffers::new(palette))),
-            focused: if let Some(path) = path {
-                let mut ken = ken.write().unwrap();
-                ken.active = path.clone();
-                ken.directories.insert(path)?;
-                
-                false
-            }
-            else {
-                true
-            },
+            buffers: Arc::new(RwLock::new(Buffers::new(&ken, palette))),
+            focused,
             fw: RwLock::new(308.0),
             ken,
             rects: Arc::new(RwLock::new(Vec::new()))
