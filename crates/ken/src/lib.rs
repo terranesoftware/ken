@@ -6,6 +6,8 @@ use buffers::{Directories, Files};
 mod error;
 pub use error::Error;
 
+pub mod filesystem;
+
 pub struct Ken {
     pub active: PathBuf,
     pub directories: Directories,
