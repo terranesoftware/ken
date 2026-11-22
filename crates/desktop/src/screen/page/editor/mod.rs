@@ -81,8 +81,12 @@ impl PageMethods for Arc<Editor> {
         let hits = self.hits.read().unwrap();
         let point = [position.x as f32, position.y as f32];
 
+        // Checked first since it overlaps the filesystem hit rect, gives the "simulation" of a higher z-level
+        if let Some(dh) = hits.divider && dh.hit(point) {
+            CursorIcon::ColResize
+        }
         // Flatten removes any that are None
-        if [hits.file, hits.filesystem].iter().flatten().any(|rect| rect.hit(point)) {
+        else if [hits.file, hits.filesystem].iter().flatten().any(|rect| rect.hit(point)) {
             CursorIcon::Text
         }
         else {
