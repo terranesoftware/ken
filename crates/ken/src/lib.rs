@@ -1,21 +1,18 @@
+pub mod buffers;
+use buffers::{Directories, Files};
+
 mod error;
 pub use error::Error;
 
-mod files;
-pub use files::Files;
-
-pub mod filesystem;
-pub use filesystem::Filesystem;
-
 pub struct Ken {
-    files: Files,
-    filesystem: Filesystem
+    pub directories: Directories,
+    pub files: Files,
 }
 
 impl Ken {
     pub fn new() -> Self {
         Self {
-            filesystem: Filesystem::new(),
+            directories: Directories::new(),
             files: Files::new()
         }
     }
