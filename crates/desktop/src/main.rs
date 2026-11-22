@@ -22,10 +22,7 @@ async fn main() -> Result<(), Error> {
     let el = EventLoop::<UserEvent>::with_user_event().build()?;
 
     // Pass it in during app creation
-    let mut app = App::new(
-        el.create_proxy(),
-        Resources::new().await?
-    );
+    let mut app = App::new(el.create_proxy()).await?;
     
     el.run_app(&mut app)?;
 
