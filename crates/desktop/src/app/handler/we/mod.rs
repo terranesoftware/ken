@@ -58,10 +58,13 @@ impl App {
             }
             WindowEvent::ModifiersChanged(modifiers) => self.ms = modifiers.state(),
             WindowEvent::MouseInput { button, state, .. } => {
-                if matches!(
-                    (button, state),
-                    (MouseButton::Left, ElementState::Released)
-                ) {
+                // Update whether the mouse is held down or not
+                match state {
+                    ElementState::Pressed => self.mh = true,
+                    ElementState::Released => self.mh = false
+                }
+                
+                if matches!(button, MouseButton::Left) && !self.mh {
                     if let Some(screen) = self.screens.get_mut(&wid) && !screen.locked {
                         if let Some(destination) = screen.page.clicked(self.position, &screen.window) {
                             screen.locked = true;

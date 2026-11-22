@@ -16,6 +16,7 @@ pub(super) struct App {
     // cache: Cache,
     elp: Arc<EventLoopProxy<UserEvent>>,
     ken: Arc<RwLock<Ken>>,
+    mh: bool, // Mouse held
     ms: ModifiersState,
     position: PhysicalPosition<f64>,
     resources: Resources,
@@ -29,6 +30,7 @@ impl App {
             // Wrap it in an Arc because on some platforms, cloning it is expensive
             elp: Arc::new(elp),
             ken: Arc::new(RwLock::new(Ken::new())),
+            mh: false,
             ms: ModifiersState::default(),
             position: PhysicalPosition::default(),
             resources: Resources::new().await?,
