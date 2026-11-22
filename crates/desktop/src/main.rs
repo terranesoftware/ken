@@ -18,16 +18,13 @@ use winit::event_loop::EventLoop;
 
 #[main]
 async fn main() -> Result<(), Error> {
-    // Initialize the resources
-    let resources = Resources::new().await?;
-    
     // Create a user callback for GPU initialization
     let el = EventLoop::<UserEvent>::with_user_event().build()?;
 
     // Pass it in during app creation
     let mut app = App::new(
         el.create_proxy(),
-        resources
+        Resources::new().await?
     );
     
     el.run_app(&mut app)?;
