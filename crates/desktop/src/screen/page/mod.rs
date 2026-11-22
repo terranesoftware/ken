@@ -14,7 +14,7 @@ pub(super) use landing::Landing;
 use std::sync::Arc;
 
 use enum_dispatch::enum_dispatch;
-use winit::{dpi::PhysicalPosition, window::CursorIcon};
+use winit::{dpi::PhysicalPosition, window::{CursorIcon, Window}};
 
 use crate::{Error, screen::{Resources, palette::Palette}};
 
@@ -28,7 +28,8 @@ pub(crate) enum Page {
 pub(crate) trait PageMethods {
     fn clicked(
         &self,
-        position: PhysicalPosition<f64>
+        position: PhysicalPosition<f64>,
+        window: &Window
     ) -> Option<Destination>;
 
     fn moved(

@@ -10,7 +10,7 @@ use std::sync::{Arc, RwLock};
 
 use carreau::Rect;
 use wgpu::CommandEncoderDescriptor;
-use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::CursorIcon};
+use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::{CursorIcon, Window}};
 
 use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, editor::render::{rects, text}}}};
 
@@ -40,7 +40,8 @@ impl Page {
 impl PageMethods for Arc<Editor> {
     fn clicked(
         &self,
-        position: PhysicalPosition<f64>
+        position: PhysicalPosition<f64>,
+        window: &Window
     ) -> Option<Destination> {
         None
     }

@@ -63,11 +63,11 @@ impl App {
                     (MouseButton::Left, ElementState::Released)
                 ) {
                     if let Some(screen) = self.screens.get_mut(&wid) && !screen.locked {
-                        if let Some(destination) = screen.page.clicked(self.position) {
+                        if let Some(destination) = screen.page.clicked(self.position, &screen.window) {
                             screen.locked = true;
                             
                             match destination {
-                                Destination::Editor => {
+                                Destination::Editor(path) => {
                                     let melp = self.elp.clone();
                                     let mr = screen.resources.clone();
                                     let palette = screen.palette;

@@ -3,6 +3,7 @@ pub(super) use buffers::Buffers;
 
 mod layout;
 pub(crate) use layout::Layout;
+use rfd::FileDialog;
 
 mod render;
 
@@ -10,7 +11,7 @@ use std::sync::{Arc, RwLock};
 
 use carreau::Rect;
 use wgpu::CommandEncoderDescriptor;
-use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::CursorIcon};
+use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::{CursorIcon, Window}};
 
 use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, landing::render::{rects, text}}}};
 
@@ -41,7 +42,8 @@ impl Page {
 impl PageMethods for Arc<Landing> {
     fn clicked(
         &self,
-        position: PhysicalPosition<f64>
+        position: PhysicalPosition<f64>,
+        window: &Window
     ) -> Option<Destination> {
         let point = [position.x as f32, position.y as f32];
         let rects = self.rects.read().unwrap();
@@ -52,7 +54,18 @@ impl PageMethods for Arc<Landing> {
             }
 
             if rect.hit(point) {
-                return Some(Destination::Editor);
+                // New
+                if index == 0 {
+                    return Some(Destination::Editor(None))
+                }
+
+                // Open
+                if index == 1 {
+                    match FileDialog::new().set_parent(window).pick_folder() {
+                        Some(path) => return Some(Destination::Editor(Some(path))),
+                        None => return None
+                    }
+                }
             }
         }
 
