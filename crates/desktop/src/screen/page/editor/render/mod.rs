@@ -17,9 +17,10 @@ impl Editor {
     ) -> Result<(), Error> {
         let focused = self.focused;
 
+        let mh = self.hits.clone();
         let mrec = self.rects.clone();
         let mres = resources.clone();
-        let rects = spawn_blocking(move || rects::prepare(focused, layout, palette, mrec, mres));
+        let rects = spawn_blocking(move || rects::prepare(focused, mh, layout, palette, mrec, mres));
 
         let mb = self.buffers.clone();
         let mres = resources.clone();

@@ -1,8 +1,10 @@
 mod buffers;
 pub(super) use buffers::Buffers;
 
+mod hits;
+use hits::Hits;
+
 mod layout;
-use ken::Ken;
 pub(crate) use layout::Layout;
 
 mod render;
@@ -10,6 +12,7 @@ mod render;
 use std::{path::PathBuf, sync::{Arc, RwLock}};
 
 use carreau::Rect;
+use ken::Ken;
 use wgpu::CommandEncoderDescriptor;
 use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::{CursorIcon, Window}};
 
@@ -19,6 +22,7 @@ pub(crate) struct Editor {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
     pub(crate) focused: bool,
     pub(crate) fw: RwLock<f32>, // Filesystem width
+    pub(crate) hits: Arc<RwLock<Hits>>,
     pub(crate) ken: Arc<RwLock<Ken>>,
     pub(crate) rects: Arc<RwLock<Vec<Rect>>>
 }
@@ -47,6 +51,7 @@ impl Page {
             buffers: Arc::new(RwLock::new(Buffers::new(&ken, palette))),
             focused,
             fw: RwLock::new(308.0),
+            hits: Arc::new(RwLock::new(Hits::default())),
             ken,
             rects: Arc::new(RwLock::new(Vec::new()))
         });
@@ -71,9 +76,18 @@ impl PageMethods for Arc<Editor> {
     fn moved(
         &self,
         position: PhysicalPosition<f64>,
-        resources: &Resources
+        _resources: &Resources
     ) -> CursorIcon {
-        CursorIcon::Default
+        let hits = self.hits.read().unwrap();
+        let point = [position.x as f32, position.y as f32];
+
+        // Flatten removes any that are None
+        if [hits.file, hits.filesystem].iter().flatten().any(|rect| rect.hit(point)) {
+            CursorIcon::Text
+        }
+        else {
+            CursorIcon::Default
+        }
     }
 
     fn render(
