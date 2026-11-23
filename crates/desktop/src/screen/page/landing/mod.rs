@@ -17,7 +17,7 @@ use carreau::Rect;
 use glyphon::{Buffer, Color, Family, TextArea, Weight};
 use winit::dpi::PhysicalSize;
 
-use crate::{Error, screen::{Page, Resources, page::{PageMethods, Palette}}};
+use crate::{Error, screen::{Page, Resources, page::Palette}};
 
 // Random list of fonts to load, will grow based on what I feel
 const FAMILIES: [(Family, Weight); 4] = [
@@ -60,7 +60,7 @@ impl Page {
         });
 
         landing.prepare(Layout::new(scale, size), *palette, resources).await?;
-        landing.render(palette, resources)?;
+        resources.render(palette)?;
         
         Ok(Self::Landing(landing))
     }

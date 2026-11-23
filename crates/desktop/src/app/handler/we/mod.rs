@@ -22,7 +22,7 @@ impl App {
                 if let Some(screen) = self.screens.get(&wid) && !screen.locked {
                     screen.window.set_cursor(screen.page.moved(&screen.palette, position, &screen.resources));
 
-                    if let Err(err) = screen.page.render(&screen.palette, &screen.resources) {
+                    if let Err(err) = screen.resources.render(&screen.palette) {
                         eprintln!("{:?}\nExiting...", err);
                         ael.exit();
                     }

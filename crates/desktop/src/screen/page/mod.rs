@@ -1,6 +1,3 @@
-mod background;
-use background::background;
-
 mod destination;
 
 pub(crate) use destination::Destination;
@@ -16,7 +13,7 @@ use std::sync::Arc;
 use enum_dispatch::enum_dispatch;
 use winit::{dpi::PhysicalPosition, window::{CursorIcon, Window}};
 
-use crate::{Error, screen::{Resources, palette::Palette}};
+use crate::screen::{Resources, palette::Palette};
 
 #[enum_dispatch(PageMethods)]
 pub(crate) enum Page {
@@ -38,10 +35,4 @@ pub(crate) trait PageMethods {
         position: PhysicalPosition<f64>,
         resources: &Resources
     ) -> CursorIcon;
-
-    fn render(
-        &self,
-        palette: &Palette,
-        resources: &Arc<Resources>
-    ) -> Result<(), Error>;
 }

@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
-use wgpu::CommandEncoderDescriptor;
 use winit::{dpi::PhysicalPosition, window::{CursorIcon, Window}};
 
-use crate::{Error, screen::{Destination, PageMethods, Palette, Resources, page::{Editor, background, editor::render::{rects, text}}}};
+use crate::screen::{Destination, PageMethods, Palette, Resources, page::Editor};
 
 impl PageMethods for Arc<Editor> {
     fn clicked(
@@ -34,25 +33,5 @@ impl PageMethods for Arc<Editor> {
         else {
             CursorIcon::Default
         }
-    }
-
-    fn render(
-        &self,
-        palette: &Palette,
-        resources: &Arc<Resources>
-    ) -> Result<(), Error> {
-        let mut encoder = resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
-        
-        {
-            let mut rp = background(&mut encoder, &resources.tv, palette.paper);
-            
-            rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
-            
-            text::render(&mut rp, &resources.text.ta, &resources.text.tr, &resources.text.viewport)?;
-        }
-        
-        resources.gpu.queue.submit([encoder.finish()]);
-        
-        Ok(())
     }
 }

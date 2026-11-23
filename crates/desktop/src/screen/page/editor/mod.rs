@@ -156,61 +156,8 @@ impl Page {
         
         editor.prepare(Layout::new(focused, 308.0, scale, size), *palette, resources).await?;
         
-        editor.render(palette, resources)?;
+        resources.render(palette)?;
         
         Ok(Self::Editor(editor))
-    }
-}
-
-impl PageMethods for Arc<Editor> {
-    fn clicked(
-        &self,
-        position: PhysicalPosition<f64>,
-        window: &Window
-    ) -> Option<Destination> {
-        None
-    }
-    
-    fn moved(
-        &self,
-        _palette: &Palette,
-        position: PhysicalPosition<f64>,
-        _resources: &Resources
-    ) -> CursorIcon {
-        let hits = self.hits.read().unwrap();
-        let layout = *self.layout.read().unwrap();
-        let point = [position.x as f32, position.y as f32];
-
-        // Checked first since it overlaps the filesystem hit rect, gives the "simulation" of a higher z-level
-        if !layout.focused && self.divider.hit(layout, point) {
-            CursorIcon::ColResize
-        }
-        // Flatten removes any that are None
-        else if [hits.file, hits.filesystem].iter().flatten().any(|rect| rect.hit(point)) {
-            CursorIcon::Text
-        }
-        else {
-            CursorIcon::Default
-        }
-    }
-
-    fn render(
-        &self,
-        palette: &Palette,
-        resources: &Arc<Resources>
-    ) -> Result<(), Error> {
-        let mut encoder = resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
-        
-        {
-            let mut rp = background(&mut encoder, &resources.tv, palette.paper);
-            
-            rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
-            
-            text::render(&mut rp, &resources.text.ta, &resources.text.tr, &resources.text.viewport)?;
-        }
-        
-        resources.gpu.queue.submit([encoder.finish()]);
-        
-        Ok(())
     }
 }

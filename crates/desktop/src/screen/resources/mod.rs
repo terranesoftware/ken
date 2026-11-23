@@ -1,5 +1,10 @@
+mod background;
+use background::background;
+
 mod gpu;
 pub(super) use gpu::Gpu;
+
+mod render;
 
 mod text;
 pub(super) use text::Text;

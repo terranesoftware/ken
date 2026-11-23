@@ -2,15 +2,6 @@ use wgpu::{Color, CommandEncoder, LoadOp, Operations, RenderPass, RenderPassColo
 
 use crate::screen::palette::Rgb;
 
-fn convert(channel: f64) -> f64 {
-    if channel <= 0.04045 {
-        channel / 12.92
-    }
-    else {
-        ((channel + 0.055) / 1.055).powf(2.4)
-    }
-}
-
 pub(super) fn background<'encoder>(
     encoder: &'encoder mut CommandEncoder,
     view: &TextureView,
@@ -38,4 +29,13 @@ pub(super) fn background<'encoder>(
         label: Some("background"),
         ..Default::default()
     })
+}
+
+fn convert(channel: f64) -> f64 {
+    if channel <= 0.04045 {
+        channel / 12.92
+    }
+    else {
+        ((channel + 0.055) / 1.055).powf(2.4)
+    }
 }
