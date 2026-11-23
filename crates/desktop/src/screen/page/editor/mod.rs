@@ -2,7 +2,7 @@ mod buffers;
 pub(super) use buffers::Buffers;
 
 mod components;
-use components::{Gutter, Heading};
+use components::{Divider, Gutter, Heading};
 
 mod hits;
 use hits::Hits;
@@ -26,10 +26,12 @@ type Area = fn(&Buffer, Layout, Color) -> TextArea<'_>;
 
 pub(crate) struct Editor {
     buffers: RwLock<Buffers>,
+    divider: Divider,
     fileg: RwLock<Gutter>, // File gutter
     fileh: RwLock<Heading>, // File heading
     filesg: RwLock<Gutter>, // Filesystem gutter
     filesh: RwLock<Heading>, // Filesystem heading
+    fp: fn(Layout, &Palette) -> Rect, // Filesystem pane
     hits: RwLock<Hits>,
     pub(crate) ken: Arc<RwLock<Ken>>,
     pub(crate) layout: RwLock<Layout>
@@ -57,6 +59,20 @@ impl Page {
         
         let editor = Arc::new(Editor {
             buffers: RwLock::new(Buffers::new(&ken, palette)),
+            divider: Divider::new(
+                |layout, backdrop| Rect {
+                    backdrop,
+                    border: Border::new([0.0; 4], 0.0, 0.0),
+                    position: [(layout.fw - 2.0) * layout.s, 0.0],
+                    size: [6.0 * layout.s, layout.h * layout.s]
+                },
+                |layout, backdrop| Rect {
+                    backdrop,
+                    border: Border::new([0.0; 4], 0.0, 0.0),
+                    position: [layout.fw * layout.s, 0.0],
+                    size: [2.0 * layout.s, layout.h * layout.s]
+                }
+            ),
             fileg: RwLock::new(Gutter::new(
                 12,
                 |buffer, layout, ink| area(buffer, layout.de(), 89.0, layout.de() + 61.0, layout.s, ink),
@@ -125,6 +141,12 @@ impl Page {
                     }
                 ))
             },
+            fp: |layout, palette| Rect {
+                backdrop: palette.shell.rect(),
+                border: Border::new([0.0; 4], 0.0, 0.0),
+                position: [0.0, 0.0],
+                size: [layout.fw * layout.s, layout.h * layout.s]
+            },
             hits: RwLock::new(Hits::default()),
             ken,
             layout: RwLock::new(Layout::default())
@@ -154,10 +176,11 @@ impl PageMethods for Arc<Editor> {
         _resources: &Resources
     ) -> CursorIcon {
         let hits = self.hits.read().unwrap();
+        let layout = *self.layout.read().unwrap();
         let point = [position.x as f32, position.y as f32];
 
         // Checked first since it overlaps the filesystem hit rect, gives the "simulation" of a higher z-level
-        if let Some(dh) = hits.divider && dh.hit(point) {
+        if !layout.focused && self.divider.hit(layout, point) {
             CursorIcon::ColResize
         }
         // Flatten removes any that are None
