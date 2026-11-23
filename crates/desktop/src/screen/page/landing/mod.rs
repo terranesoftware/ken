@@ -1,22 +1,23 @@
 mod components;
 use components::Action;
 
+mod instances;
+use instances::{name, new, open, re, recent, separator, tagline};
+
 mod layout;
 pub(crate) use layout::Layout;
 
 mod methods;
 
-use rand::seq::IndexedRandom;
-
 mod render;
 
 use std::sync::{Arc, RwLock};
 
-use carreau::{Rect, rect::Border};
-use glyphon::{Attrs, Buffer, Color, Family, Metrics, Shaping, TextArea, Weight};
+use carreau::Rect;
+use glyphon::{Buffer, Color, Family, TextArea, Weight};
 use winit::dpi::PhysicalSize;
 
-use crate::{Error, screen::{Page, Resources, page::{PageMethods, Palette, landing::render::text::{area, center, width}}}};
+use crate::{Error, screen::{Page, Resources, page::{PageMethods, Palette}}};
 
 // Random list of fonts to load, will grow based on what I feel
 const FAMILIES: [(Family, Weight); 4] = [
@@ -49,89 +50,13 @@ impl Page {
         let landing = Arc::new(Landing {
             layout: RwLock::new(Layout::default()),
             
-            name: RwLock::new((
-                {
-                    let mut buffer = Buffer::new_empty(Metrics::new(100.0, f32::MIN_POSITIVE));
-                    
-                    let (family, weight) = *FAMILIES.choose(&mut rand::rng()).unwrap();
-                    let attrs = Attrs::new().family(family).weight(weight);
-                    
-                    buffer.set_rich_text([
-                        ("ken", attrs.clone().color(palette.ink.text())),
-                        (".", attrs.clone().color(palette.accent.text()))
-                    ], &attrs, Shaping::Advanced, None);
-                    
-                    buffer
-                },
-                |buffer, layout, ink| area(buffer, center(buffer, layout.w), layout.top, layout.s, ink)
-            )),
-            tagline: RwLock::new((
-                {
-                    let mut buffer = Buffer::new_empty(Metrics::new(37.5, f32::MIN_POSITIVE));
-                    
-                    let (family, weight) = *FAMILIES.choose(&mut rand::rng()).unwrap();
-                    let attrs = Attrs::new().family(family).weight(weight);
-                    
-                    buffer.set_text("The text editor is back.", &attrs, Shaping::Advanced, None);
-                    
-                    buffer
-                },
-                |buffer, layout, ink| area(buffer, center(buffer, layout.w), layout.top + 87.5, layout.s, ink)
-            )),
-            new: RwLock::new(Action::new(
-                ("\u{E0C9}", |buffer, layout, ink| area(buffer, layout.left + 12.5, layout.top + 175.0, layout.s, ink)),
-                ("New", |buffer, layout, ink| area(buffer, layout.left + 50.0, layout.top + 175.0, layout.s, ink)),
-                palette,
-                |layout, backdrop| Rect {
-                    backdrop,
-                    border: Border::new([0.0; 4], 11.375 * layout.s, 0.0),
-                    position: [layout.left * layout.s, (layout.top + 137.5) * layout.s],
-                    size: [layout.cw * layout.s, 75.0 * layout.s]
-                },
-                ("Ctrl+N", |buffer, layout, ink| area(buffer, layout.right - width(buffer) - 12.5, layout.top + 175.0, layout.s, ink))
-            )),
-            open: RwLock::new(Action::new(
-                ("\u{E247}", |buffer, layout, ink| area(buffer, layout.left + 12.5, layout.top + 250.0, layout.s, ink)),
-                ("Open", |buffer, layout, ink| area(buffer, layout.left + 50.0, layout.top + 250.0, layout.s, ink)),
-                palette,
-                |layout, backdrop| Rect {
-                    backdrop,
-                    border: Border::new([0.0; 4], 11.375 * layout.s, 0.0),
-                    position: [layout.left * layout.s, (layout.top + 212.5) * layout.s],
-                    size: [layout.cw * layout.s, 75.0 * layout.s]
-                },
-                ("Ctrl+O", |buffer, layout, ink| area(buffer, layout.right - width(buffer) - 12.5, layout.top + 250.0, layout.s, ink))
-            )),
-            separator: |layout, palette| Rect {
-                backdrop: palette.border.rect(),
-                border: Border::new([0.0; 4], 0.0, 0.0),
-                position: [layout.left * layout.s, (layout.top + 312.5) * layout.s],
-                size: [layout.cw * layout.s, 2.5 * layout.s]
-            },
-            re: RwLock::new((
-                {
-                    let mut buffer = Buffer::new_empty(Metrics::new(17.5, 10.0));
-                    
-                    let attrs = Attrs::new().family(Family::Name("Gelasio")).weight(Weight::NORMAL);
-                    
-                    buffer.set_text("Nothing here yet.", &attrs, Shaping::Advanced, None);
-                    
-                    buffer
-                },
-                |buffer, layout, ink| area(buffer, layout.left, layout.top + 425.0, layout.s, ink)
-            )),
-            recent: RwLock::new((
-                {
-                    let mut buffer = Buffer::new_empty(Metrics::new(12.5, 8.0));
-                    
-                    let attrs = Attrs::new().family(Family::Name("Cascadia Code")).weight(Weight::SEMIBOLD);
-                    
-                    buffer.set_text("RECENT", &attrs, Shaping::Advanced, None);
-                    
-                    buffer
-                },
-                |buffer, layout, ink| area(buffer, layout.left, layout.top + 375.0, layout.s, ink)
-            ))
+            name: name(palette),
+            tagline: tagline(),
+            new: new(palette),
+            open: open(palette),
+            separator,
+            re: re(),
+            recent: recent()
         });
 
         landing.prepare(Layout::new(scale, size), *palette, resources).await?;
