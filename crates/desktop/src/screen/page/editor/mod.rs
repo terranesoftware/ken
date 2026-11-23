@@ -10,6 +10,8 @@ use hits::Hits;
 mod layout;
 pub(crate) use layout::Layout;
 
+mod methods;
+
 mod render;
 
 use std::{env::home_dir, path::{MAIN_SEPARATOR, PathBuf}, sync::{Arc, RwLock}};
