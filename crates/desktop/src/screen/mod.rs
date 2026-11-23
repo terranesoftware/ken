@@ -6,7 +6,7 @@ use init::init;
 
 mod page;
 pub(super) use page::{Destination, Page};
-pub(super) use page::{editor, landing, PageMethods};
+pub(super) use page::{landing, PageMethods};
 
 mod palette;
 pub(super) use {palette::Palette, palette::themes};
