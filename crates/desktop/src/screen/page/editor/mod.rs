@@ -4,8 +4,8 @@ pub(super) use buffers::Buffers;
 mod components;
 use components::{Divider, Gutter, Heading};
 
-mod hits;
-use hits::Hits;
+mod instances;
+use instances::divider;
 
 mod layout;
 pub(crate) use layout::Layout;
