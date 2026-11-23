@@ -25,6 +25,15 @@ impl Layout {
         }
     }
 
+    pub(super) fn de(self) -> f32 {
+        if self.focused {
+            0.0
+        }
+        else {
+            self.fw + 2.0
+        }
+    }
+
     pub(crate) fn resize(
         self,
         s: f32,
