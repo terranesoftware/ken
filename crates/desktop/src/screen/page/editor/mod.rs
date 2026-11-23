@@ -20,10 +20,9 @@ use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Pa
 
 pub(crate) struct Editor {
     pub(crate) buffers: Arc<RwLock<Buffers>>,
-    pub(crate) focused: bool,
-    pub(crate) fw: RwLock<f32>, // Filesystem width
     pub(crate) hits: Arc<RwLock<Hits>>,
     pub(crate) ken: Arc<RwLock<Ken>>,
+    pub(crate) layout: RwLock<Layout>,
     pub(crate) rects: Arc<RwLock<Vec<Rect>>>
 }
 
@@ -53,10 +52,11 @@ impl Page {
             fw: RwLock::new(308.0),
             hits: Arc::new(RwLock::new(Hits::default())),
             ken,
+            layout: RwLock::new(Layout::default()),
             rects: Arc::new(RwLock::new(Vec::new()))
         });
         
-        editor.prepare(Layout::new(308.0, scale, size), *palette, resources).await?;
+        editor.prepare(Layout::new(focused, 308.0, scale, size), *palette, resources).await?;
         
         editor.render(palette, resources)?;
         
