@@ -12,3 +12,6 @@ pub(super) use gutter::Gutter;
 
 mod heading;
 pub(super) use heading::Heading;
+
+mod pane;
+pub(super) use pane::Pane;
