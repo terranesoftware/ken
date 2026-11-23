@@ -1,3 +1,6 @@
+mod body;
+pub(super) use body::Body;
+
 mod divider;
 pub(super) use divider::Divider;
 
