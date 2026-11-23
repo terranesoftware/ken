@@ -1,26 +1,42 @@
-mod buffers;
-pub(super) use buffers::Buffers;
-
 mod components;
 use components::Action;
 
 mod layout;
 pub(crate) use layout::Layout;
-use rfd::FileDialog;
+
+mod methods;
+
+use rand::seq::IndexedRandom;
 
 mod render;
 
 use std::sync::{Arc, RwLock};
 
-use carreau::Rect;
-use wgpu::CommandEncoderDescriptor;
-use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::{CursorIcon, Window}};
+use carreau::{Rect, rect::Border};
+use glyphon::{Attrs, Buffer, Color, Family, Metrics, Shaping, TextArea, Weight};
+use winit::dpi::PhysicalSize;
 
-use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, landing::render::{rects, text}}}};
+use crate::{Error, screen::{Page, Resources, page::{PageMethods, Palette, landing::render::text::{area, center, width}}}};
+
+// Random list of fonts to load, will grow based on what I feel
+const FAMILIES: [(Family, Weight); 4] = [
+    (Family::Name("Bricolage Grotesque"), Weight::BOLD),
+    (Family::Name("Fraunces"), Weight::BOLD),
+    (Family::Name("Instrument Serif"), Weight::NORMAL),
+    (Family::Name("Righteous"), Weight::NORMAL)
+];
+
+type Area = fn(&Buffer, Layout, Color) -> TextArea<'_>;
 
 pub(crate) struct Landing {
-    pub(crate) buffers: Arc<RwLock<Buffers>>,
-    pub(crate) rects: Arc<RwLock<Vec<Rect>>>
+    layout: RwLock<Layout>,
+    name: RwLock<(Buffer, Area)>,
+    new: RwLock<Action>,
+    open: RwLock<Action>,
+    re: RwLock<(Buffer, Area)>, // Recents Empty
+    recent: RwLock<(Buffer, Area)>,
+    separator: fn(Layout, &Palette) -> Rect,
+    tagline: RwLock<(Buffer, Area)>
 }
 
 impl Page {
@@ -31,93 +47,96 @@ impl Page {
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
         let landing = Arc::new(Landing {
-            buffers: Arc::new(RwLock::new(Buffers::new(palette))),
-            rects: Arc::new(RwLock::new(Vec::new()))
+            layout: RwLock::new(Layout::default()),
+            
+            name: RwLock::new((
+                {
+                    let mut buffer = Buffer::new_empty(Metrics::new(100.0, f32::MIN_POSITIVE));
+                    
+                    let (family, weight) = *FAMILIES.choose(&mut rand::rng()).unwrap();
+                    let attrs = Attrs::new().family(family).weight(weight);
+                    
+                    buffer.set_rich_text([
+                        ("ken", attrs.clone().color(palette.ink.text())),
+                        (".", attrs.clone().color(palette.accent.text()))
+                    ], &attrs, Shaping::Advanced, None);
+                    
+                    buffer
+                },
+                |buffer, layout, ink| area(buffer, center(buffer, layout.w), layout.top, layout.s, ink)
+            )),
+            tagline: RwLock::new((
+                {
+                    let mut buffer = Buffer::new_empty(Metrics::new(37.5, f32::MIN_POSITIVE));
+                    
+                    let (family, weight) = *FAMILIES.choose(&mut rand::rng()).unwrap();
+                    let attrs = Attrs::new().family(family).weight(weight);
+                    
+                    buffer.set_text("The text editor is back.", &attrs, Shaping::Advanced, None);
+                    
+                    buffer
+                },
+                |buffer, layout, ink| area(buffer, center(buffer, layout.w), layout.top + 87.5, layout.s, ink)
+            )),
+            new: RwLock::new(Action::new(
+                ("\u{E0C9}", |buffer, layout, ink| area(buffer, layout.left + 12.5, layout.top + 175.0, layout.s, ink)),
+                ("New", |buffer, layout, ink| area(buffer, layout.left + 50.0, layout.top + 175.0, layout.s, ink)),
+                palette,
+                |layout, backdrop| Rect {
+                    backdrop,
+                    border: Border::new([0.0; 4], 11.375 * layout.s, 0.0),
+                    position: [layout.left * layout.s, (layout.top + 137.5) * layout.s],
+                    size: [layout.cw * layout.s, 75.0 * layout.s]
+                },
+                ("Ctrl+N", |buffer, layout, ink| area(buffer, layout.right - width(buffer) - 12.5, layout.top + 175.0, layout.s, ink))
+            )),
+            open: RwLock::new(Action::new(
+                ("\u{E247}", |buffer, layout, ink| area(buffer, layout.left + 12.5, layout.top + 250.0, layout.s, ink)),
+                ("Open", |buffer, layout, ink| area(buffer, layout.left + 50.0, layout.top + 250.0, layout.s, ink)),
+                palette,
+                |layout, backdrop| Rect {
+                    backdrop,
+                    border: Border::new([0.0; 4], 11.375 * layout.s, 0.0),
+                    position: [layout.left * layout.s, (layout.top + 212.5) * layout.s],
+                    size: [layout.cw * layout.s, 75.0 * layout.s]
+                },
+                ("Ctrl+O", |buffer, layout, ink| area(buffer, layout.right - width(buffer) - 12.5, layout.top + 250.0, layout.s, ink))
+            )),
+            separator: |layout, palette| Rect {
+                backdrop: palette.border.rect(),
+                border: Border::new([0.0; 4], 0.0, 0.0),
+                position: [layout.left * layout.s, (layout.top + 312.5) * layout.s],
+                size: [layout.cw * layout.s, 2.5 * layout.s]
+            },
+            re: RwLock::new((
+                {
+                    let mut buffer = Buffer::new_empty(Metrics::new(17.5, 10.0));
+                    
+                    let attrs = Attrs::new().family(Family::Name("Gelasio")).weight(Weight::NORMAL);
+                    
+                    buffer.set_text("Nothing here yet.", &attrs, Shaping::Advanced, None);
+                    
+                    buffer
+                },
+                |buffer, layout, ink| area(buffer, layout.left, layout.top + 425.0, layout.s, ink)
+            )),
+            recent: RwLock::new((
+                {
+                    let mut buffer = Buffer::new_empty(Metrics::new(12.5, 8.0));
+                    
+                    let attrs = Attrs::new().family(Family::Name("Cascadia Code")).weight(Weight::SEMIBOLD);
+                    
+                    buffer.set_text("RECENT", &attrs, Shaping::Advanced, None);
+                    
+                    buffer
+                },
+                |buffer, layout, ink| area(buffer, layout.left, layout.top + 375.0, layout.s, ink)
+            ))
         });
 
         landing.prepare(Layout::new(scale, size), *palette, resources).await?;
         landing.render(palette, resources)?;
         
         Ok(Self::Landing(landing))
-    }
-}
-
-impl PageMethods for Arc<Landing> {
-    fn clicked(
-        &self,
-        position: PhysicalPosition<f64>,
-        window: &Window
-    ) -> Option<Destination> {
-        let point = [position.x as f32, position.y as f32];
-        let rects = self.rects.read().unwrap();
-
-        for (index, rect) in rects.iter().enumerate() {
-            if index == 2 {
-                continue;
-            }
-
-            if rect.hit(point) {
-                // New
-                if index == 0 {
-                    return Some(Destination::Editor(None))
-                }
-
-                // Open
-                if index == 1 {
-                    match FileDialog::new().set_parent(window).pick_folder() {
-                        Some(path) => return Some(Destination::Editor(Some(path))),
-                        None => return None
-                    }
-                }
-            }
-        }
-
-        None
-    }
-    
-    fn moved(
-        &self,
-        position: PhysicalPosition<f64>,
-        resources: &Resources
-    ) -> CursorIcon {
-        let point = [position.x as f32, position.y as f32];
-        let mut rects = self.rects.write().unwrap();
-
-        for (index, rect) in rects.iter_mut().enumerate() {
-            if index == 2 {
-                continue;
-            }
-
-            rect.backdrop[3] = if rect.hit(point) {
-                1.0
-            }
-            else {
-                0.0
-            };
-        }
-
-        resources.carreau.write().unwrap().prepare(&resources.gpu.queue, &rects);
-
-        CursorIcon::Default
-    }
-
-    fn render(
-        &self,
-        palette: &Palette,
-        resources: &Arc<Resources>
-    ) -> Result<(), Error> {
-        let mut encoder = resources.gpu.device.create_command_encoder(&CommandEncoderDescriptor::default());
-        
-        {
-            let mut rp = background(&mut encoder, &resources.tv, palette.paper);
-            
-            rects::render(&resources.carreau.read().unwrap(), &mut rp, resources.tv.texture());
-            
-            text::render(&mut rp, &resources.text.ta, &resources.text.tr, &resources.text.viewport)?;
-        }
-        
-        resources.gpu.queue.submit([encoder.finish()]);
-        
-        Ok(())
     }
 }

@@ -34,6 +34,7 @@ pub(crate) trait PageMethods {
 
     fn moved(
         &self,
+        palette: &Palette,
         position: PhysicalPosition<f64>,
         resources: &Resources
     ) -> CursorIcon;

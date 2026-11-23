@@ -6,12 +6,12 @@ use shape::shape;
 mod uv;
 use uv::uv;
 
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
-use crate::{Error, screen::{Resources, page::{Palette, landing::{Buffers, Layout}}}};
+use crate::{Error, screen::{Resources, page::{Palette, landing::{Landing, Layout}}}};
 
 pub(crate) fn prepare(
-    buffers: Arc<RwLock<Buffers>>,
+    landing: &Landing,
     layout: Layout,
     palette: Palette,
     resources: Arc<Resources>
@@ -21,8 +21,8 @@ pub(crate) fn prepare(
 
     // Shape the buffers
     shape(
-        &mut buffers.write().unwrap(),
-        &mut text.fs.write().unwrap()
+        &mut text.fs.write().unwrap(),
+        landing
     );
     
     // Update the viewport
@@ -34,9 +34,9 @@ pub(crate) fn prepare(
     
     // Create the layout of the text
     layout::layout(
-        &buffers.read().unwrap(),
         &gpu.device,
         &mut text.fs.write().unwrap(),
+        landing,
         layout,
         palette,
         &gpu.queue,

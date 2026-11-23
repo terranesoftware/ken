@@ -5,4 +5,4 @@ mod render;
 pub(crate) use render::render;
 
 mod utils;
-use utils::{area, center, width};
+pub(crate) use utils::{area, center, width};

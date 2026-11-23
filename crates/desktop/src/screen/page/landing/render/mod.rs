@@ -10,18 +10,20 @@ use crate::{Error, screen::{Resources, page::{Landing, Palette, landing::Layout}
 
 impl Landing {
     pub(crate) async fn prepare(
-        &self,
+        self: &Arc<Self>,
         layout: Layout,
         palette: Palette,
         resources: &Arc<Resources>,
     ) -> Result<(), Error> {
-        let mrec = self.rects.clone();
-        let mres = resources.clone();
-        let rects = spawn_blocking(move || rects::prepare(layout, palette, mrec, mres));
+        *self.layout.write().unwrap() = layout;
 
-        let mb = self.buffers.clone();
+        let ml = self.clone();
         let mres = resources.clone();
-        let text = spawn_blocking(move || text::prepare(mb, layout, palette, mres));
+        let rects = spawn_blocking(move || rects::prepare(&ml, layout, palette, &mres));
+
+        let ml = self.clone();
+        let mres = resources.clone();
+        let text = spawn_blocking(move || text::prepare(&ml, layout, palette, mres));
 
         rects.await?;
         text.await?

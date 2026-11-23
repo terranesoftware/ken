@@ -1,7 +1,6 @@
 use winit::dpi::PhysicalSize;
 
-// All fields are logical pixels; `s` converts them to physical
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub(crate) struct Layout {
     pub(super) cw: f32,
     pub(super) left: f32,

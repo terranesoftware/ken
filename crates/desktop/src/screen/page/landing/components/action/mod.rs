@@ -1,13 +1,13 @@
 mod areas;
+mod hit;
+mod hover;
 mod rect;
 mod shape;
 
 use carreau::Rect;
-use glyphon::{Attrs, Buffer, Color, Family, Metrics, Shaping, TextArea, Weight};
+use glyphon::{Attrs, Buffer, Family, Metrics, Shaping, Weight};
 
-use crate::screen::page::{Palette, landing::Layout};
-
-type Area = fn(&Buffer, Layout, Color) -> TextArea<'_>;
+use crate::screen::page::{Palette, landing::{Area, Layout}};
 
 pub(crate) struct Action {
     hovered: bool,
