@@ -1,6 +1,9 @@
 mod buffers;
 pub(super) use buffers::Buffers;
 
+mod components;
+use components::Gutter;
+
 mod hits;
 use hits::Hits;
 
@@ -11,19 +14,23 @@ mod render;
 
 use std::{path::PathBuf, sync::{Arc, RwLock}};
 
-use carreau::Rect;
+use carreau::{Rect, rect::Border};
+use glyphon::{Buffer, Color, TextArea};
 use ken::Ken;
 use wgpu::CommandEncoderDescriptor;
 use winit::{dpi::{PhysicalPosition, PhysicalSize}, window::{CursorIcon, Window}};
 
-use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, editor::render::{rects, text}}}};
+use crate::{Error, screen::{Page, Resources, page::{Destination, PageMethods, Palette, background, editor::render::{rects, text::{self, area}}}}};
+
+type Area = fn(&Buffer, Layout, Color) -> TextArea<'_>;
 
 pub(crate) struct Editor {
-    pub(crate) buffers: Arc<RwLock<Buffers>>,
-    pub(crate) hits: Arc<RwLock<Hits>>,
+    buffers: RwLock<Buffers>,
+    fileg: RwLock<Gutter>, // File gutter
+    filesg: RwLock<Gutter>, // Filesystem gutter
+    hits: RwLock<Hits>,
     pub(crate) ken: Arc<RwLock<Ken>>,
-    pub(crate) layout: RwLock<Layout>,
-    pub(crate) rects: Arc<RwLock<Vec<Rect>>>
+    pub(crate) layout: RwLock<Layout>
 }
 
 impl Page {
@@ -47,13 +54,41 @@ impl Page {
         };
         
         let editor = Arc::new(Editor {
-            buffers: Arc::new(RwLock::new(Buffers::new(&ken, palette))),
-            focused,
-            fw: RwLock::new(308.0),
-            hits: Arc::new(RwLock::new(Hits::default())),
+            buffers: RwLock::new(Buffers::new(&ken, palette)),
+            fileg: RwLock::new(Gutter::new(
+                12,
+                |buffer, layout, ink| area(buffer, layout.de(), 89.0, layout.de() + 61.0, layout.s, ink),
+                palette,
+                |layout, backdrop| Rect {
+                    backdrop,
+                    border: Border::new([0.0; 4], 0.0, 0.0),
+                    position: [(layout.de() + 61.0) * layout.s, 67.0 * layout.s],
+                    size: [2.0 * layout.s, (layout.h - 67.0) * layout.s]
+                },
+                buffers::TEXT.as_bytes(),
+                51.0
+            )),
+            filesg: {
+                let ken = ken.read().unwrap();
+                let listing = ken.directories.get(&ken.active).map(|buffer| buffer.read(..).unwrap()).unwrap_or_default();
+                
+                RwLock::new(Gutter::new(
+                    1,
+                    |buffer, layout, ink| area(buffer, 0.0, 89.0, 38.0, layout.s, ink),
+                    palette,
+                    |layout, backdrop| Rect {
+                        backdrop,
+                        border: Border::new([0.0; 4], 0.0, 0.0),
+                        position: [38.0 * layout.s, 67.0 * layout.s],
+                        size: [2.0 * layout.s, (layout.h - 67.0) * layout.s]
+                    },
+                    listing,
+                    28.0
+                ))
+            },
+            hits: RwLock::new(Hits::default()),
             ken,
-            layout: RwLock::new(Layout::default()),
-            rects: Arc::new(RwLock::new(Vec::new()))
+            layout: RwLock::new(Layout::default())
         });
         
         editor.prepare(Layout::new(focused, 308.0, scale, size), *palette, resources).await?;
@@ -75,6 +110,7 @@ impl PageMethods for Arc<Editor> {
     
     fn moved(
         &self,
+        _palette: &Palette,
         position: PhysicalPosition<f64>,
         _resources: &Resources
     ) -> CursorIcon {
