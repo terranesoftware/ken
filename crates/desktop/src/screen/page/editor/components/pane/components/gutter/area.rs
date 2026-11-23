@@ -1,13 +1,13 @@
 use glyphon::{Color, TextArea};
 
-use crate::screen::page::editor::{Layout, components::Body};
+use crate::screen::page::editor::{Layout, components::pane::Gutter};
 
-impl Body {
+impl Gutter {
     pub(crate) fn area(
         &self,
         layout: Layout,
         ink: Color
     ) -> TextArea<'_> {
-        (self.text.1)(&self.text.0, layout, ink)
+        (self.numbers.1)(&self.numbers.0, layout, ink)
     }
 }

@@ -1,4 +1,4 @@
-use crate::screen::page::editor::{Layout, components::Body};
+use crate::screen::page::editor::{Layout, components::pane::Body};
 
 impl Body {
     pub(crate) fn hit(

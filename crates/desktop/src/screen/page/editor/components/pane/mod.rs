@@ -1,11 +1,15 @@
 mod areas;
+
+pub(crate) mod components;
+use components::{Body, Cursor, Gutter, Heading};
+
 mod hit;
 mod rects;
 mod shape;
 
 use carreau::Rect;
 
-use crate::screen::page::{Palette, editor::{Layout, components::{Body, Cursor, Gutter, Heading}}};
+use crate::screen::page::{Palette, editor::Layout};
 
 pub(crate) struct Pane {
     background: fn(Layout, &Palette) -> Rect,

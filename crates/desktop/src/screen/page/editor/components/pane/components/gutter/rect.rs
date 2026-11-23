@@ -1,8 +1,8 @@
 use carreau::Rect;
 
-use crate::screen::page::{Palette, editor::{Layout, components::Heading}};
+use crate::screen::page::{Palette, editor::{Layout, components::pane::Gutter}};
 
-impl Heading {
+impl Gutter {
     pub(crate) fn rect(
         &self,
         layout: Layout,

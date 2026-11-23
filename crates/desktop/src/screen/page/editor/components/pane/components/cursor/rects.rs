@@ -1,6 +1,6 @@
 use carreau::Rect;
 
-use crate::screen::page::{Palette, editor::{Layout, components::Cursor}};
+use crate::screen::page::{Palette, editor::{Layout, components::pane::Cursor}};
 
 impl Cursor {
     pub(crate) fn rects(

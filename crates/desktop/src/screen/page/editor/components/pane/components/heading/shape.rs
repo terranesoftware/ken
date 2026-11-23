@@ -1,6 +1,6 @@
 use glyphon::FontSystem;
 
-use crate::screen::page::editor::components::Heading;
+use crate::screen::page::editor::components::pane::Heading;
 
 impl Heading {
     pub(crate) fn shape(

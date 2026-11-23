@@ -1,6 +1,6 @@
 use glyphon::FontSystem;
 
-use crate::screen::page::editor::components::Gutter;
+use crate::screen::page::editor::components::pane::Gutter;
 
 impl Gutter {
     pub(crate) fn shape(

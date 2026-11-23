@@ -1,6 +1,6 @@
 use glyphon::{Color, TextArea};
 
-use crate::screen::page::editor::{Layout, components::Heading};
+use crate::screen::page::editor::{Layout, components::pane::Heading};
 
 impl Heading {
     pub(crate) fn areas(
