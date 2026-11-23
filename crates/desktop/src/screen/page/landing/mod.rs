@@ -1,6 +1,9 @@
 mod buffers;
 pub(super) use buffers::Buffers;
 
+mod components;
+use components::Action;
+
 mod layout;
 pub(crate) use layout::Layout;
 use rfd::FileDialog;

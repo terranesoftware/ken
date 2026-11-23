@@ -9,8 +9,7 @@ pub(super) use page::{Destination, Page};
 pub(super) use page::{editor, landing, PageMethods};
 
 mod palette;
-use palette::Palette;
-pub(super) use palette::themes;
+pub(super) use {palette::Palette, palette::themes};
 
 mod resources;
 use resources::{Gpu, Text};
