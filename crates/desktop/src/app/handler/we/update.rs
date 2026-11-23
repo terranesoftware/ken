@@ -3,7 +3,7 @@ use std::sync::Arc;
 use tokio::spawn;
 use winit::{event_loop::EventLoopProxy, window::WindowId};
 
-use crate::{Screen, UserEvent, event::EventKind, screen::{Page, editor, landing}};
+use crate::{Screen, UserEvent, event::EventKind, screen::{Page, landing}};
 
 pub(super) fn update(
     elp: Arc<EventLoopProxy<UserEvent>>,
@@ -20,8 +20,8 @@ pub(super) fn update(
             let editor = editor.clone();
             
             _ = spawn(async move {
-                let fw = *editor.fw.read().unwrap();
-                let result = editor.prepare(editor::Layout::new(fw, s, size), palette, &mr).await;
+                let layout = editor.layout.read().unwrap().resize(s, size);
+                let result = editor.prepare(layout, palette, &mr).await;
                 
                 _ = elp.send_event(UserEvent {
                     ek: EventKind::Update(result),
