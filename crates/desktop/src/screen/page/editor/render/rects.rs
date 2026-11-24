@@ -12,7 +12,9 @@ pub(crate) fn prepare(
         all.extend(editor.filesystem.read().unwrap().rects(layout, &palette));
         all.push(editor.divider.rect(layout, &palette));
     }
-    all.extend(editor.file.read().unwrap().rects(layout, &palette));
+    if let Some(file) = &editor.file {
+        all.extend(file.read().unwrap().rects(layout, &palette));
+    }
 
     resources.rects(&all);
 }

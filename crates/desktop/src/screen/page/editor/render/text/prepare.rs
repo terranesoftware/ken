@@ -10,20 +10,23 @@ pub(crate) fn prepare(
 
     let height = layout.h - 89.0;
 
-    editor.file.write().unwrap().shape(fs, height);
+    if let Some(file) = &editor.file {
+        file.write().unwrap().shape(fs, height);
+    }
     editor.filesystem.write().unwrap().shape(fs, height);
 
     let ink = palette.ink.text();
-
-    let file = editor.file.read().unwrap();
-    let filesystem = editor.filesystem.read().unwrap();
-
     let mut areas = Vec::new();
-
+    
+    let filesystem = editor.filesystem.read().unwrap();
     if !layout.focused {
         areas.extend(filesystem.areas(layout, ink));
     }
-    areas.extend(file.areas(layout, ink));
+    
+    let file = editor.file.as_ref().map(|file| file.read().unwrap());
+    if let Some(file) = &file {
+        areas.extend(file.areas(layout, ink));
+    }
 
     resources.areas(areas, fs)
 }

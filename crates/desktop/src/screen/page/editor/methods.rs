@@ -27,7 +27,7 @@ impl PageMethods for Arc<Editor> {
             CursorIcon::ColResize
         }
         // The filesystem pane is absent if focused
-        else if self.file.read().unwrap().hit(layout, point) || (!layout.focused && self.filesystem.read().unwrap().hit(layout, point)) {
+        else if self.file.as_ref().is_some_and(|file| file.read().unwrap().hit(layout, point)) || (!layout.focused && self.filesystem.read().unwrap().hit(layout, point)) {
             CursorIcon::Text
         }
         else {
