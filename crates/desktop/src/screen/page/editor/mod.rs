@@ -14,7 +14,7 @@ mod render;
 use std::{path::PathBuf, sync::{Arc, RwLock}};
 
 use glyphon::{Buffer, Color, TextArea};
-use ken::Ken;
+use ken::{Ken, buffers::File};
 use winit::dpi::PhysicalSize;
 
 use crate::{Error, screen::{Page, Resources, page::Palette}};
@@ -23,8 +23,8 @@ type Area = fn(&Buffer, Layout, Color) -> TextArea<'_>;
 
 pub(crate) struct Editor {
     divider: Divider,
-    file: RwLock<Vec<Pane>>,
-    filesystem: RwLock<Vec<Pane>>,
+    file: RwLock<Option<Pane>>,
+    filesystem: RwLock<Option<Pane>>,
     pub(crate) ken: Arc<RwLock<Ken>>,
     pub(crate) layout: RwLock<Layout>
 }
@@ -38,36 +38,41 @@ impl Page {
         scale: f32,
         size: PhysicalSize<u32>
     ) -> Result<Self, Error> {
-        let focused = if let Some(path) = path {
-            let mut ken = ken.write().unwrap();
-            ken.active = path.clone();
-            ken.directories.insert(path)?;
-            
-            false
-        }
-        else {
-            true
+        // Set the given path as the active directory (which doubles as a boolean)
+        let focused = {
+            ken.write().unwrap().directories.active = path.clone();
+
+            path.is_none()
         };
         
         let editor = Arc::new(Editor {
             divider: divider(),
             file: if focused {
-                ken.write().unwrap().drafts.insert();
-                RwLock::new(vec![file(("untitled", ""), palette, "")])
+                let mut ken = ken.write().unwrap();
+                
+                let key = ken.files.ephemeral.insert();
+                ken.files.active = Some(File::Ephemeral(key));
+                
+                RwLock::new(Some(file(("untitled", ""), palette, "")))
             }
             else {
-                RwLock::new(Vec::new())
+                RwLock::new(None)
             },
-            filesystem: {
-                let ken = ken.read().unwrap();
+            filesystem: if !focused {
+                // TODO: Have to handle the Result and Option (by switching to the existing tab) here
+                ken.write().unwrap().directories.insert(path.unwrap()).unwrap().unwrap();
                 
-                RwLock::new(vec![filesystem(&ken, palette)])
+                let directories = &ken.read().unwrap().directories;
+                RwLock::new(Some(filesystem(directories, palette)))
+            }
+            else {
+                RwLock::new(None)
             },
             ken,
             layout: RwLock::new(Layout::default())
         });
         
-        editor.prepare(Layout::new(focused, 308.0, scale, size), *palette, resources).await?;
+        editor.prepare(Layout::new(308.0, scale, size), *palette, resources).await?;
         
         resources.render(palette)?;
         
