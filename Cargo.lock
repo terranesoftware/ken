@@ -1322,6 +1322,7 @@ name = "ken"
 version = "0.1.0"
 dependencies = [
  "pecia",
+ "slotmap",
  "walkdir",
 ]
 

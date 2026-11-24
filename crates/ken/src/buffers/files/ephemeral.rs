@@ -1,29 +1,29 @@
 use pecia::Buffer;
 use slotmap::{SlotMap, new_key_type};
 
-new_key_type! { pub struct DraftKey; }
+new_key_type! { pub struct EphemeralKey; }
 
-pub struct Drafts(SlotMap<DraftKey, Buffer>);
+pub struct Ephemeral(SlotMap<EphemeralKey, Buffer>);
 
-impl Drafts {
+impl Ephemeral {
     pub fn new() -> Self {
         Self(SlotMap::with_key())
     }
     
     pub fn get(
         &self,
-        key: DraftKey
+        key: EphemeralKey
     ) -> Option<&Buffer> {
         self.0.get(key)
     }
     
-    pub fn insert(&mut self) -> DraftKey {
+    pub fn insert(&mut self) -> EphemeralKey {
         self.0.insert(Buffer::vector())
     }
     
     pub fn remove(
         &mut self,
-        key: DraftKey
+        key: EphemeralKey
     ) {
         self.0.remove(key);
     }

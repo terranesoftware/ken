@@ -5,18 +5,24 @@ use walkdir::WalkDir;
 
 use crate::Error;
 
-pub struct Directories(BTreeMap<PathBuf, Buffer>);
+pub struct Directories {
+    pub active: PathBuf,
+    map: BTreeMap<PathBuf, Buffer>
+}
 
 impl Directories {
     pub fn new() -> Self {
-        Self(BTreeMap::new())
+        Self {
+            active: PathBuf::new(),
+            map: BTreeMap::new()
+        }
     }
     
     pub fn get(
         &self,
         key: &Path
     ) -> Option<&Buffer> {
-        self.0.get(key)
+        self.map.get(key)
     }
     
     pub fn insert(
@@ -44,7 +50,7 @@ impl Directories {
         // Write the temp buffer into the text buffer
         buffer.edit(0..0, &temp)?;
         
-        Ok(self.0.insert(key, buffer))
+        Ok(self.map.insert(key, buffer))
     }
     
     pub fn remove(
@@ -52,6 +58,6 @@ impl Directories {
         key: &Path
     ) {
         // Remove the parent and its children
-        self.0.retain(|path, _| !path.starts_with(key));
+        self.map.retain(|path, _| !path.starts_with(key));
     }
 }

@@ -4,9 +4,9 @@ use pecia::Buffer;
 
 use crate::Error;
 
-pub struct Files(BTreeMap<PathBuf, Buffer>);
+pub struct Persistent(BTreeMap<PathBuf, Buffer>);
 
-impl Files {
+impl Persistent {
     pub fn new() -> Self {
         Self(BTreeMap::new())
     }

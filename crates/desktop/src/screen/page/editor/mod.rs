@@ -1,5 +1,3 @@
-mod buffers;
-
 pub(super) mod components;
 use components::{Divider, Pane};
 
@@ -25,8 +23,8 @@ type Area = fn(&Buffer, Layout, Color) -> TextArea<'_>;
 
 pub(crate) struct Editor {
     divider: Divider,
-    file: RwLock<Option<Pane>>,
-    filesystem: RwLock<Pane>,
+    file: RwLock<Vec<Pane>>,
+    filesystem: RwLock<Vec<Pane>>,
     pub(crate) ken: Arc<RwLock<Ken>>,
     pub(crate) layout: RwLock<Layout>
 }
@@ -54,15 +52,16 @@ impl Page {
         let editor = Arc::new(Editor {
             divider: divider(),
             file: if focused {
-                RwLock::new(Some(file(("untitled", ""), palette)))
+                ken.write().unwrap().drafts.insert();
+                RwLock::new(vec![file(("untitled", ""), palette, "")])
             }
             else {
-                RwLock::new(None)
+                RwLock::new(Vec::new())
             },
             filesystem: {
                 let ken = ken.read().unwrap();
                 
-                filesystem(&ken, palette)
+                RwLock::new(vec![filesystem(&ken, palette)])
             },
             ken,
             layout: RwLock::new(Layout::default())
