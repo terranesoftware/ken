@@ -6,17 +6,6 @@ pub(crate) fn prepare(
     palette: Palette,
     resources: &Resources
 ) -> Result<(), Error> {
-    let fs = &mut resources.text.fs.write().unwrap();
-
-    let height = layout.h - 89.0;
-
-    if let Some(file) = editor.file.write().unwrap().as_mut() {
-        file.shape(fs, height);
-    }
-    if let Some(filesystem) = editor.filesystem.write().unwrap().as_mut() {
-        filesystem.shape(fs, height);
-    }
-
     let mut areas = Vec::new();
     let ink = palette.ink.text();
     
@@ -32,5 +21,5 @@ pub(crate) fn prepare(
         areas.extend(file.areas(layout, ink, x));
     }
 
-    resources.areas(areas, fs)
+    resources.areas(areas, &mut resources.text.fs.write().unwrap())
 }
