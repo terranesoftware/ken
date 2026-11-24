@@ -12,7 +12,7 @@ use carreau::Rect;
 use crate::screen::page::{Palette, editor::Layout};
 
 pub(crate) struct Pane {
-    background: fn(Layout, &Palette) -> Rect,
+    background: fn(Layout, &Palette, f32) -> Rect,
     body: Body,
     cursor: Cursor,
     gutter: Gutter,
@@ -21,7 +21,7 @@ pub(crate) struct Pane {
 
 impl Pane {
     pub(crate) fn new(
-        background: fn(Layout, &Palette) -> Rect,
+        background: fn(Layout, &Palette, f32) -> Rect,
         body: Body,
         cursor: Cursor,
         gutter: Gutter,

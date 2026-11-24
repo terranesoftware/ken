@@ -6,8 +6,9 @@ impl Gutter {
     pub(crate) fn area(
         &self,
         layout: Layout,
-        ink: Color
+        ink: Color,
+        x: f32
     ) -> TextArea<'_> {
-        (self.numbers.1)(&self.numbers.0, layout, ink)
+        (self.numbers.1)(&self.numbers.0, layout, ink, x)
     }
 }

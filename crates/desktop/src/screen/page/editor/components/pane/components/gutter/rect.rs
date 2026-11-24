@@ -6,8 +6,9 @@ impl Gutter {
     pub(crate) fn rect(
         &self,
         layout: Layout,
-        palette: &Palette
+        palette: &Palette,
+        x: f32
     ) -> Rect {
-        (self.rule)(layout, palette.sb.rect())
+        (self.rule)(layout, palette.sb.rect(), x)
     }
 }

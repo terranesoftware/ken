@@ -6,8 +6,9 @@ impl Body {
     pub(crate) fn area(
         &self,
         layout: Layout,
-        ink: Color
+        ink: Color,
+        x: f32
     ) -> TextArea<'_> {
-        (self.text.1)(&self.text.0, layout, ink)
+        (self.text.1)(&self.text.0, layout, ink, x)
     }
 }

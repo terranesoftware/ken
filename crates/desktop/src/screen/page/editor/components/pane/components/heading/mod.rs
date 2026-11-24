@@ -10,7 +10,7 @@ use crate::screen::page::{Palette, editor::{Area, Layout}};
 pub(crate) struct Heading {
     name: (Buffer, Area),
     path: (Buffer, Area),
-    rule: fn(Layout, [f32; 4]) -> Rect
+    rule: fn(Layout, [f32; 4], f32) -> Rect
 }
 
 impl Heading {
@@ -18,7 +18,7 @@ impl Heading {
         name: (&str, Area),
         palette: &Palette,
         path: (&str, Area),
-        rule: fn(Layout, [f32; 4]) -> Rect
+        rule: fn(Layout, [f32; 4], f32) -> Rect
     ) -> Self {
         let buffer = |size: f32, text: &str, attrs: Attrs| {
             let mut buffer = Buffer::new_empty(Metrics::new(size, f32::MIN_POSITIVE));

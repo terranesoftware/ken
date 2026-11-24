@@ -6,11 +6,12 @@ impl Heading {
     pub(crate) fn areas(
         &self,
         layout: Layout,
-        ink: Color
+        ink: Color,
+        x: f32
     ) -> [TextArea<'_>; 2] {
         [
-            (self.name.1)(&self.name.0, layout, ink),
-            (self.path.1)(&self.path.0, layout, ink)
+            (self.name.1)(&self.name.0, layout, ink, x),
+            (self.path.1)(&self.path.0, layout, ink, x)
         ]
     }
 }

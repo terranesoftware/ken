@@ -6,13 +6,14 @@ impl Pane {
     pub(crate) fn areas(
         &self,
         layout: Layout,
-        ink: Color
+        ink: Color,
+        x: f32
     ) -> [TextArea<'_>; 4] {
-        let [name, path] = self.heading.areas(layout, ink);
+        let [name, path] = self.heading.areas(layout, ink, x);
 
         [
-            self.body.area(layout, ink),
-            self.gutter.area(layout, ink),
+            self.body.area(layout, ink, x),
+            self.gutter.area(layout, ink, x),
             name,
             path
         ]

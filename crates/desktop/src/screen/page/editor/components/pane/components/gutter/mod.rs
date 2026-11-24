@@ -11,7 +11,7 @@ use crate::screen::page::{Palette, editor::{Area, Layout}};
 
 pub(crate) struct Gutter {
     numbers: (Buffer, Area),
-    rule: fn(Layout, [f32; 4]) -> Rect,
+    rule: fn(Layout, [f32; 4], f32) -> Rect,
     width: f32
 }
 
@@ -20,7 +20,7 @@ impl Gutter {
         active: usize,
         numbers: Area,
         palette: &Palette,
-        rule: fn(Layout, [f32; 4]) -> Rect,
+        rule: fn(Layout, [f32; 4], f32) -> Rect,
         text: &[u8],
         width: f32
     ) -> Self {

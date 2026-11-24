@@ -13,19 +13,23 @@ pub(crate) fn prepare(
     if let Some(file) = editor.file.write().unwrap().as_mut() {
         file.shape(fs, height);
     }
-    editor.filesystem.write().unwrap().shape(fs, height);
+    if let Some(filesystem) = editor.filesystem.write().unwrap().as_mut() {
+        filesystem.shape(fs, height);
+    }
 
-    let ink = palette.ink.text();
     let mut areas = Vec::new();
+    let ink = palette.ink.text();
     
     let filesystem = editor.filesystem.read().unwrap();
-    if !layout.focused {
-        areas.extend(filesystem.areas(layout, ink));
-    }
+    let x = filesystem.as_ref().map_or(0.0, |filesystem| {
+        areas.extend(filesystem.areas(layout, ink, 0.0));
+        
+        layout.de()
+    });
     
     let file = editor.file.read().unwrap();
     if let Some(file) = file.as_ref() {
-        areas.extend(file.areas(layout, ink));
+        areas.extend(file.areas(layout, ink, x));
     }
 
     resources.areas(areas, fs)

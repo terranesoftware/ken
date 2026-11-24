@@ -6,11 +6,12 @@ impl Cursor {
     pub(crate) fn rects(
         &self,
         layout: Layout,
-        palette: &Palette
+        palette: &Palette,
+        x: f32
     ) -> [Rect; 2] {
         [
-            (self.band)(layout, palette),
-            (self.caret)(layout, palette.accent.rect())
+            (self.band)(layout, palette, x),
+            (self.caret)(layout, palette.accent.rect(), x)
         ]
     }
 }

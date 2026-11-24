@@ -6,16 +6,17 @@ impl Pane {
     pub(crate) fn rects(
         &self,
         layout: Layout,
-        palette: &Palette
+        palette: &Palette,
+        x: f32
     ) -> [Rect; 5] {
-        let [band, caret] = self.cursor.rects(layout, palette);
+        let [band, caret] = self.cursor.rects(layout, palette, x);
 
         [
-            (self.background)(layout, palette),
+            (self.background)(layout, palette, x),
             band,
             caret,
-            self.gutter.rect(layout, palette),
-            self.heading.rect(layout, palette)
+            self.gutter.rect(layout, palette, x),
+            self.heading.rect(layout, palette, x)
         ]
     }
 }

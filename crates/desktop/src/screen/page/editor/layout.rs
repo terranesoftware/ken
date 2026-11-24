@@ -2,7 +2,6 @@ use winit::dpi::PhysicalSize;
 
 #[derive(Clone, Copy, Default)]
 pub(crate) struct Layout {
-    pub(super) focused: bool,
     pub(super) fw: f32, // Filesystem width
     pub(super) h: f32,
     pub(super) s: f32,
@@ -11,13 +10,11 @@ pub(crate) struct Layout {
 
 impl Layout {
     pub(crate) fn new(
-        focused: bool,
         fw: f32,
         s: f32,
         size: PhysicalSize<u32>
     ) -> Self {
         Self {
-            focused,
             fw,
             h: size.height as f32 / s,
             s,
@@ -25,13 +22,8 @@ impl Layout {
         }
     }
 
-    pub(super) fn de(self) -> f32 {
-        if self.focused {
-            0.0
-        }
-        else {
-            self.fw + 2.0
-        }
+    pub(super) fn de(&self) -> f32 {
+        self.fw + 2.0
     }
 
     pub(crate) fn resize(
@@ -39,6 +31,6 @@ impl Layout {
         s: f32,
         size: PhysicalSize<u32>
     ) -> Self {
-        Self::new(self.focused, self.fw, s, size)
+        Self::new(self.fw, s, size)
     }
 }

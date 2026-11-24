@@ -19,7 +19,7 @@ use winit::dpi::PhysicalSize;
 
 use crate::{Error, screen::{Page, Resources, page::Palette}};
 
-type Area = fn(&Buffer, Layout, Color) -> TextArea<'_>;
+type Area = fn(&Buffer, Layout, Color, f32) -> TextArea<'_>;
 
 pub(crate) struct Editor {
     divider: Divider,
@@ -60,7 +60,7 @@ impl Page {
             },
             filesystem: if !focused {
                 // TODO: Have to handle the Result and Option (by switching to the existing tab) here
-                ken.write().unwrap().directories.insert(path.unwrap()).unwrap().unwrap();
+                ken.write().unwrap().directories.insert(path.unwrap()).unwrap();
                 
                 let directories = &ken.read().unwrap().directories;
                 RwLock::new(Some(filesystem(directories, palette)))

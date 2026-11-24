@@ -4,8 +4,9 @@ impl Pane {
     pub(crate) fn hit(
         &self,
         layout: Layout,
-        point: [f32; 2]
+        point: [f32; 2],
+        x: f32
     ) -> bool {
-        self.body.hit(layout, point)
+        self.body.hit(layout, point, x)
     }
 }
