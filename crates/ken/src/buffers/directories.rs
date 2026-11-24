@@ -12,11 +12,17 @@ impl Directories {
         Self(BTreeMap::new())
     }
     
-    pub fn get(&self, key: &Path) -> Option<&Buffer> {
+    pub fn get(
+        &self,
+        key: &Path
+    ) -> Option<&Buffer> {
         self.0.get(key)
     }
     
-    pub fn insert(&mut self, key: PathBuf) -> Result<Option<Buffer>, Error> {
+    pub fn insert(
+        &mut self,
+        key: PathBuf
+    ) -> Result<Option<Buffer>, Error> {
         // Create the text buffer
         let mut buffer = Buffer::vector();
         
@@ -41,7 +47,10 @@ impl Directories {
         Ok(self.0.insert(key, buffer))
     }
     
-    pub fn remove(&mut self, key: &Path) {
+    pub fn remove(
+        &mut self,
+        key: &Path
+    ) {
         // Remove the parent and its children
         self.0.retain(|path, _| !path.starts_with(key));
     }
