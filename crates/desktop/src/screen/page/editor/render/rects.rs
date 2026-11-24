@@ -12,8 +12,8 @@ pub(crate) fn prepare(
         all.extend(editor.filesystem.read().unwrap().rects(layout, &palette));
         all.push(editor.divider.rect(layout, &palette));
     }
-    if let Some(file) = &editor.file {
-        all.extend(file.read().unwrap().rects(layout, &palette));
+    if let Some(file) = editor.file.read().unwrap().as_ref() {
+        all.extend(file.rects(layout, &palette));
     }
 
     resources.rects(&all);

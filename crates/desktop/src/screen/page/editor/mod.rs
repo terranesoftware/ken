@@ -25,7 +25,7 @@ type Area = fn(&Buffer, Layout, Color) -> TextArea<'_>;
 
 pub(crate) struct Editor {
     divider: Divider,
-    file: Option<RwLock<Pane>>,
+    file: RwLock<Option<Pane>>,
     filesystem: RwLock<Pane>,
     pub(crate) ken: Arc<RwLock<Ken>>,
     pub(crate) layout: RwLock<Layout>
@@ -54,10 +54,10 @@ impl Page {
         let editor = Arc::new(Editor {
             divider: divider(),
             file: if focused {
-                Some(file(("untitled", ""), palette))
+                RwLock::new(Some(file(("untitled", ""), palette)))
             }
             else {
-                None
+                RwLock::new(None)
             },
             filesystem: {
                 let ken = ken.read().unwrap();

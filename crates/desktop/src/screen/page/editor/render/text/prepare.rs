@@ -10,8 +10,8 @@ pub(crate) fn prepare(
 
     let height = layout.h - 89.0;
 
-    if let Some(file) = &editor.file {
-        file.write().unwrap().shape(fs, height);
+    if let Some(file) = editor.file.write().unwrap().as_mut() {
+        file.shape(fs, height);
     }
     editor.filesystem.write().unwrap().shape(fs, height);
 
@@ -23,8 +23,8 @@ pub(crate) fn prepare(
         areas.extend(filesystem.areas(layout, ink));
     }
     
-    let file = editor.file.as_ref().map(|file| file.read().unwrap());
-    if let Some(file) = &file {
+    let file = editor.file.read().unwrap();
+    if let Some(file) = file.as_ref() {
         areas.extend(file.areas(layout, ink));
     }
 
