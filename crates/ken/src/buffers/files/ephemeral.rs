@@ -1,5 +1,7 @@
-use pecia::Buffer;
+use pecia::Buffer as Inner;
 use slotmap::{SlotMap, new_key_type};
+
+use crate::Buffer;
 
 new_key_type! { pub struct EphemeralKey; }
 
@@ -18,7 +20,7 @@ impl Ephemeral {
     }
     
     pub fn insert(&mut self) -> EphemeralKey {
-        self.0.insert(Buffer::vector())
+        self.0.insert(Buffer::new(Inner::vector()))
     }
     
     pub fn remove(

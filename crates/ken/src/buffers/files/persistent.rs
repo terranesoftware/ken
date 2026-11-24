@@ -1,8 +1,8 @@
 use std::{collections::BTreeMap, fs::read_to_string, path::{Path, PathBuf}};
 
-use pecia::Buffer;
+use pecia::Buffer as Inner;
 
-use crate::Error;
+use crate::{Buffer, Error};
 
 pub struct Persistent(BTreeMap<PathBuf, Buffer>);
 
@@ -22,12 +22,12 @@ impl Persistent {
         &mut self,
         key: PathBuf
     ) -> Result<Option<Buffer>, Error> {
-        let mut buffer = Buffer::vector();
+        let mut inner = Inner::vector();
         
         let contents = read_to_string(&key)?;
-        buffer.edit(0..0, contents.as_bytes())?;
+        inner.edit(0..0, contents.as_bytes())?;
         
-        Ok(self.0.insert(key, buffer))
+        Ok(self.0.insert(key, Buffer::new(inner)))
     }
     
     pub fn remove(

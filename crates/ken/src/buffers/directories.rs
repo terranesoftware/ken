@@ -1,9 +1,9 @@
 use std::{collections::BTreeMap, io::Write, path::{Path, PathBuf}};
 
-use pecia::Buffer;
+use pecia::Buffer as Inner;
 use walkdir::WalkDir;
 
-use crate::Error;
+use crate::{Buffer, Error};
 
 pub struct Directories {
     pub active: Option<PathBuf>,
@@ -30,7 +30,7 @@ impl Directories {
         key: PathBuf
     ) -> Result<Option<Buffer>, Error> {
         // Create the text buffer
-        let mut buffer = Buffer::vector();
+        let mut inner = Inner::vector();
         
         // Create a temp buffer for ease
         let mut temp = Vec::new();
@@ -48,9 +48,9 @@ impl Directories {
         temp.pop();
         
         // Write the temp buffer into the text buffer
-        buffer.edit(0..0, &temp)?;
+        inner.edit(0..0, &temp)?;
         
-        Ok(self.map.insert(key, buffer))
+        Ok(self.map.insert(key, Buffer::new(inner)))
     }
     
     pub fn remove(

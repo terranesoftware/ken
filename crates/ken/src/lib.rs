@@ -1,5 +1,6 @@
 pub mod buffers;
 use buffers::{Directories, Files};
+pub use buffers::Buffer;
 
 mod error;
 pub use error::Error;
