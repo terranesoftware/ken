@@ -10,21 +10,20 @@ use crate::{Error, screen::{Resources, page::{Editor, Palette, editor::Layout}}}
 
 impl Editor {
     pub(crate) async fn prepare(
-        &self,
+        self: &Arc<Self>,
         layout: Layout,
         palette: Palette,
         resources: &Arc<Resources>
     ) -> Result<(), Error> {
-        let focused = self.focused;
+        *self.layout.write().unwrap() = layout;
 
-        let mh = self.hits.clone();
-        let mrec = self.rects.clone();
+        let me = self.clone();
         let mres = resources.clone();
-        let rects = spawn_blocking(move || rects::prepare(focused, mh, layout, palette, mrec, mres));
+        let rects = spawn_blocking(move || rects::prepare(&me, layout, palette, &mres));
 
-        let mb = self.buffers.clone();
+        let me = self.clone();
         let mres = resources.clone();
-        let text = spawn_blocking(move || text::prepare(mb, focused, layout, palette, mres));
+        let text = spawn_blocking(move || text::prepare(&me, layout, palette, &mres));
 
         rects.await?;
         text.await?

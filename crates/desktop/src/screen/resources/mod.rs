@@ -1,8 +1,12 @@
+mod areas;
+
 mod background;
 use background::background;
 
 mod gpu;
 pub(super) use gpu::Gpu;
+
+mod rects;
 
 mod render;
 

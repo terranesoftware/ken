@@ -12,5 +12,5 @@ pub(crate) fn prepare(
         (landing.separator)(layout, &palette)
     ];
 
-    resources.carreau.write().unwrap().prepare(&resources.gpu.queue, &rects);
+    resources.rects(&rects);
 }

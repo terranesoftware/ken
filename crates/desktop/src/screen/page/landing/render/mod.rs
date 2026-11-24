@@ -23,7 +23,7 @@ impl Landing {
 
         let ml = self.clone();
         let mres = resources.clone();
-        let text = spawn_blocking(move || text::prepare(&ml, layout, palette, mres));
+        let text = spawn_blocking(move || text::prepare(&ml, layout, palette, &mres));
 
         rects.await?;
         text.await?

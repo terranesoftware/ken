@@ -2,4 +2,4 @@ mod prepare;
 pub(super) use prepare::prepare;
 
 mod utils;
-use utils::area;
+pub(crate) use utils::area;

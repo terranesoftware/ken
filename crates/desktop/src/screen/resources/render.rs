@@ -15,7 +15,11 @@ impl Resources {
             let texture = self.tv.texture();
             self.carreau.read().unwrap().render(&mut rp, [texture.width() as f32, texture.height() as f32]);
             
-            self.text.tr.read().unwrap().render(&self.text.ta.read().unwrap(), &self.text.viewport.read().unwrap(), &mut rp)?;
+            let ta = self.text.ta.read().unwrap();
+            let tr = self.text.tr.read().unwrap();
+            let viewport = self.text.viewport.read().unwrap();
+
+            tr.render(&ta, &viewport, &mut rp)?;
         }
         
         self.gpu.queue.submit([encoder.finish()]);
