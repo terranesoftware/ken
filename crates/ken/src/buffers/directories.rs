@@ -6,14 +6,14 @@ use walkdir::WalkDir;
 use crate::Error;
 
 pub struct Directories {
-    pub active: PathBuf,
+    pub active: Option<PathBuf>,
     map: BTreeMap<PathBuf, Buffer>
 }
 
 impl Directories {
     pub fn new() -> Self {
         Self {
-            active: PathBuf::new(),
+            active: None,
             map: BTreeMap::new()
         }
     }
