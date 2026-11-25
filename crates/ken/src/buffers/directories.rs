@@ -1,5 +1,6 @@
 use std::{collections::BTreeMap, io::Write, path::{Path, PathBuf}};
 
+use landmine::Landmine;
 use pecia::Buffer as Inner;
 use walkdir::WalkDir;
 
@@ -7,22 +8,33 @@ use crate::{Buffer, Error};
 
 pub struct Directories {
     pub active: Option<PathBuf>,
-    map: BTreeMap<PathBuf, Buffer>
+    pub map: DirectoriesMap
 }
+
+pub struct DirectoriesMap(BTreeMap<PathBuf, Buffer>);
 
 impl Directories {
     pub fn new() -> Self {
         Self {
             active: None,
-            map: BTreeMap::new()
+            map: DirectoriesMap(BTreeMap::new())
         }
     }
-    
+}
+
+impl DirectoriesMap {
     pub fn get(
         &self,
         key: &Path
-    ) -> Option<&Buffer> {
-        self.map.get(key)
+    ) -> Landmine<&Buffer> {
+        self.0.get(key).into()
+    }
+    
+    pub fn get_mut(
+        &mut self,
+        key: &Path
+    ) -> Landmine<&mut Buffer> {
+        self.0.get_mut(key).into()
     }
     
     pub fn insert(
@@ -50,7 +62,7 @@ impl Directories {
         // Write the temp buffer into the text buffer
         inner.edit(0..0, &temp)?;
         
-        Ok(self.map.insert(key, Buffer::new(inner)))
+        Ok(self.0.insert(key, Buffer::new(inner)))
     }
     
     pub fn remove(
@@ -58,6 +70,6 @@ impl Directories {
         key: &Path
     ) {
         // Remove the parent and its children
-        self.map.retain(|path, _| !path.starts_with(key));
+        self.0.retain(|path, _| !path.starts_with(key));
     }
 }

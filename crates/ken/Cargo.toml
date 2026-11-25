@@ -5,6 +5,7 @@ edition = "2024"
 license = "Apache-2.0"
 
 [dependencies]
+landmine = "0.1.1"
 pecia = "0.2.0"
 slotmap = "1.1.1"
 walkdir = "2.5.1"

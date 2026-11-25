@@ -1,5 +1,6 @@
 use std::{collections::BTreeMap, fs::read_to_string, path::{Path, PathBuf}};
 
+use landmine::Landmine;
 use pecia::Buffer as Inner;
 
 use crate::{Buffer, Error};
@@ -14,8 +15,15 @@ impl Persistent {
     pub fn get(
         &self,
         key: &Path
-    ) -> Option<&Buffer> {
-        self.0.get(key)
+    ) -> Landmine<&Buffer> {
+        self.0.get(key).into()
+    }
+
+    pub fn get_mut(
+        &mut self,
+        key: &Path
+    ) -> Landmine<&mut Buffer> {
+        self.0.get_mut(key).into()
     }
     
     pub fn insert(

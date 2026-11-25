@@ -1,3 +1,4 @@
+use landmine::Landmine;
 use pecia::Buffer as Inner;
 use slotmap::{SlotMap, new_key_type};
 
@@ -15,8 +16,15 @@ impl Ephemeral {
     pub fn get(
         &self,
         key: EphemeralKey
-    ) -> Option<&Buffer> {
-        self.0.get(key)
+    ) -> Landmine<&Buffer> {
+        self.0.get(key).into()
+    }
+
+    pub fn get_mut(
+        &mut self,
+        key: EphemeralKey
+    ) -> Landmine<&mut Buffer> {
+        self.0.get_mut(key).into()
     }
     
     pub fn insert(&mut self) -> EphemeralKey {
