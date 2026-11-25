@@ -31,7 +31,7 @@ impl Editor {
             // Otherwise, the file pane starts all the way from the left
             let x = filesystem.as_mut().map_or(0.0, |filesystem| {
                 let directories = &ken.directories;
-                let cursor = directories.get(directories.active.as_ref().unwrap()).unwrap().cursor;
+                let cursor = directories.map.get(directories.active.as_ref().unwrap()).unwrap().cursor;
                 
                 filesystem.add(&mut areas, cursor, &mut fs, layout, &palette, &mut rects, 0.0);
                 self.divider.add(layout, &palette, &mut rects);

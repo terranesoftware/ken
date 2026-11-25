@@ -60,7 +60,7 @@ impl Page {
             },
             filesystem: if !focused {
                 // TODO: Have to handle the Result and Option (by switching to the existing tab) here
-                ken.write().unwrap().directories.insert(path.unwrap()).unwrap();
+                ken.write().unwrap().directories.map.insert(path.unwrap()).unwrap();
                 
                 let directories = &ken.read().unwrap().directories;
                 RwLock::new(Some(filesystem(directories, palette)))

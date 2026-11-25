@@ -88,7 +88,10 @@ impl App {
                                 },
                                 Destination::Landing => ()
                             }
-                        };
+                        }
+                        else if matches!(*screen.page, Page::Editor(_)) {
+                            update(self.elp.clone(), screen, wid);
+                        }
                     }
                 }
             }

@@ -1,12 +1,13 @@
 use crate::screen::page::editor::{Layout, components::pane::Body};
 
 impl Body {
-    pub(crate) fn hit(
+    // Rect hit
+    pub(crate) fn rh(
         &self,
         layout: Layout,
         point: [f32; 2],
         x: f32
     ) -> bool {
-        (self.hit)(layout, [0.0; 4], x).hit(point)
+        (self.rect)(layout, [0.0; 4], x).hit(point)
     }
 }

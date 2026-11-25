@@ -7,6 +7,6 @@ impl Pane {
         point: [f32; 2],
         x: f32
     ) -> bool {
-        self.body.hit(layout, point, x)
+        self.body.rh(layout, point, x)
     }
 }
