@@ -1,6 +1,4 @@
-mod areas;
-mod rect;
-mod shape;
+mod add;
 
 use carreau::Rect;
 use glyphon::{Attrs, Buffer, Family, Metrics, Shaping, Weight};

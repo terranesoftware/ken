@@ -1,10 +1,10 @@
-pub(super) mod rects;
-
-pub(super) mod text;
+mod area;
+pub(super) use area::area;
 
 use std::sync::Arc;
 
-use tokio::task::{block_in_place, spawn_blocking};
+use ken::buffers::File;
+use tokio::task::block_in_place;
 
 use crate::{Error, screen::{Resources, page::{Editor, Palette, editor::Layout}}};
 
@@ -17,26 +17,40 @@ impl Editor {
     ) -> Result<(), Error> {
         *self.layout.write().unwrap() = layout;
 
-        // Have to shape before we're able to determine cursor position
         block_in_place(|| {
+            let ken = self.ken.read().unwrap();
             let mut fs = resources.text.fs.write().unwrap();
-            if let Some(file) = self.file.write().unwrap().as_mut() {
-                file.shape(&mut fs, layout.h - 89.0);
-            }
-            if let Some(filesystem) = self.filesystem.write().unwrap().as_mut() {
-                filesystem.shape(&mut fs, layout.h - 89.0);
-            }
-        });
-        
-        let me = self.clone();
-        let mres = resources.clone();
-        let rects = spawn_blocking(move || rects::prepare(&me, layout, palette, &mres));
 
-        let me = self.clone();
-        let mres = resources.clone();
-        let text = spawn_blocking(move || text::prepare(&me, layout, palette, &mres));
+            let mut filesystem = self.filesystem.write().unwrap();
+            let mut file = self.file.write().unwrap();
 
-        rects.await?;
-        text.await?
+            let mut areas = Vec::new();
+            let mut rects = Vec::new();
+
+            // Add the filesystem pane and the divider *and then* return the divider's edge so the file pane knows where to start
+            // Otherwise, the file pane starts all the way from the left
+            let x = filesystem.as_mut().map_or(0.0, |filesystem| {
+                let directories = &ken.directories;
+                let cursor = directories.get(directories.active.as_ref().unwrap()).unwrap().cursor;
+                
+                filesystem.add(&mut areas, cursor, &mut fs, layout, &palette, &mut rects, 0.0);
+                self.divider.add(layout, &palette, &mut rects);
+                
+                layout.de()
+            });
+
+            if let Some(file) = file.as_mut() {
+                let files = &ken.files;
+                let cursor = match files.active.as_ref().unwrap() {
+                    File::Ephemeral(key) => files.ephemeral.get(*key),
+                    File::Persistent(path) => files.persistent.get(path)
+                }.unwrap().cursor;
+
+                file.add(&mut areas, cursor, &mut fs, layout, &palette, &mut rects, x);
+            }
+
+            resources.rects(&rects);
+            resources.areas(areas, &mut fs)
+        })
     }
 }

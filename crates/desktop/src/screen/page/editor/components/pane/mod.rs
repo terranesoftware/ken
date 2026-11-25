@@ -1,38 +1,17 @@
-mod areas;
+mod add;
 
 pub(crate) mod components;
-use components::{Body, Cursor, Gutter, Heading};
+use components::{Body, Gutter, Heading};
 
 mod hit;
-mod rects;
-mod shape;
 
 use carreau::Rect;
 
 use crate::screen::page::{Palette, editor::Layout};
 
 pub(crate) struct Pane {
-    background: fn(Layout, &Palette, f32) -> Rect,
-    body: Body,
-    cursor: Cursor,
-    gutter: Gutter,
-    heading: Heading
-}
-
-impl Pane {
-    pub(crate) fn new(
-        background: fn(Layout, &Palette, f32) -> Rect,
-        body: Body,
-        cursor: Cursor,
-        gutter: Gutter,
-        heading: Heading
-    ) -> Self {
-        Self {
-            background,
-            body,
-            cursor,
-            gutter,
-            heading
-        }
-    }
+    pub(crate) background: fn(Layout, &Palette, f32) -> Rect,
+    pub(crate) body: Body,
+    pub(crate) gutter: Gutter,
+    pub(crate) heading: Heading
 }

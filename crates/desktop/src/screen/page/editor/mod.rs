@@ -53,7 +53,7 @@ impl Page {
                 let key = ken.files.ephemeral.insert();
                 ken.files.active = Some(File::Ephemeral(key));
                 
-                RwLock::new(Some(file(("untitled", ""), palette, "")))
+                RwLock::new(Some(file("untitled", palette, "", "")))
             }
             else {
                 RwLock::new(None)

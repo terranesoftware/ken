@@ -1,6 +1,4 @@
-mod area;
-mod rect;
-mod shape;
+mod add;
 
 use std::fmt::Write;
 

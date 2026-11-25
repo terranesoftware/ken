@@ -1,5 +1,5 @@
+mod add;
 mod hit;
-mod rect;
 
 use carreau::Rect;
 
