@@ -17,7 +17,6 @@ impl Pane {
         rects.push((self.background)(layout, palette, x));
 
         self.body.add(areas, cursor, fs, layout, palette, rects, x);
-        self.gutter.add(areas, fs, layout, palette, rects, x);
         self.heading.add(areas, fs, layout, palette, rects, x);
     }
 }

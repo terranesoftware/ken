@@ -1,7 +1,7 @@
 mod add;
 
 pub(crate) mod components;
-use components::Cursor;
+use components::{Cursor, Gutter};
 
 mod rh;
 
@@ -14,6 +14,7 @@ use crate::screen::page::editor::{Area, Layout};
 
 pub(crate) struct Body {
     cursor: Cursor,
+    gutter: Gutter,
     rect: fn(Layout, [f32; 4], f32) -> Rect,
     pub(crate) text: (Buffer, Area)
 }
@@ -21,6 +22,7 @@ pub(crate) struct Body {
 impl Body {
     pub(crate) fn new(
         cursor: Cursor,
+        gutter: Gutter,
         rect: fn(Layout, [f32; 4], f32) -> Rect,
         text: (&str, Area)
     ) -> Self {
@@ -32,6 +34,7 @@ impl Body {
         
         Self {
             cursor,
+            gutter,
             rect,
             text: (buffer, text.1)
         }
