@@ -1,6 +1,9 @@
 pub(super) mod components;
 use components::{Divider, Pane};
 
+mod focus;
+pub(crate) use focus::Focus;
+
 mod instances;
 use instances::{divider, file, filesystem};
 
@@ -25,6 +28,7 @@ pub(crate) struct Editor {
     divider: Divider,
     file: RwLock<Option<Pane>>,
     filesystem: RwLock<Option<Pane>>,
+    pub(crate) focus: Option<Focus>,
     pub(crate) ken: Arc<RwLock<Ken>>,
     pub(crate) layout: RwLock<Layout>
 }
@@ -67,6 +71,12 @@ impl Page {
             }
             else {
                 RwLock::new(None)
+            },
+            focus: if focused {
+                Some(Focus::File)
+            }
+            else {
+                None
             },
             ken,
             layout: RwLock::new(Layout::default())
